@@ -1,0 +1,41 @@
+<!-- This is your form template, e.g., reservation_form.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Other head elements -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let interval = 15; // Your time interval in minutes
+
+            // This function rounds the time to the nearest interval
+            function roundMinutes(date) {
+                date.setMinutes(Math.round(date.getMinutes() / interval) * interval);
+                date.setSeconds(0);
+                return date;
+            }
+
+            // Here we enforce the step for all inputs with the 'datetimefield' class
+            let datetimeFields = document.querySelectorAll('.datetimefield');
+            datetimeFields.forEach(function(field) {
+                field.step = interval * 60; // Step attribute should be in seconds
+
+                field.addEventListener('change', function(e) {
+                    let value = e.target.valueAsNumber;
+                    if (value) {
+                        let date = roundMinutes(new Date(value));
+                        e.target.valueAsNumber = date.getTime();
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- Your form elements -->
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
