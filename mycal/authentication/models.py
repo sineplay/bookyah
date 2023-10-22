@@ -34,6 +34,8 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
 	email = models.EmailField(verbose_name='email address', max_length=255, unique=True)
+	first_name = models.CharField(max_length=30, blank=True)
+	last_name = models.CharField(max_length=30, blank=True)
 	is_active = models.BooleanField(default=True)
 	is_staff = models.BooleanField(default=False)
     # other fields...
@@ -41,12 +43,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 	objects = CustomUserManager()
 	
 	USERNAME_FIELD = 'email'
-	REQUIRED_FIELDS = []
+	REQUIRED_FIELDS = ['first_name', 'last_name']
 	
 	def __str__(self):
 		return self.email
 
-# Any additional models related to the authentication app
 class UserProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     # other fields like first_name, last_name, etc.
