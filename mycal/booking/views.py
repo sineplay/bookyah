@@ -16,7 +16,7 @@ def create_reservation(request):
 	else:
 		form = ReservationForm()
 		
-	return render(request, 'reserve_template.html', {'form': form})
+	return render(request, 'booking/reserve_template.html', {'form': form})
 
 def reserve_success(request):
-	return render(request, 'reserve_success.html', {})
+	return render(request, 'booking/reserve_success.html', {})
