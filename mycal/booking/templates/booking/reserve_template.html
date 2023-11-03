@@ -27,6 +27,19 @@
                     }
                 });
             });
+            
+        	const form = document.querySelector('form');
+  			form.addEventListener('submit', function(event) {
+    		 	const startInput = document.querySelector('input[name="start_time"]');
+        		const endInput = document.querySelector('input[name="end_time"]');
+        		const startDate = new Date(startInput.value);
+        		const endDate = new Date(endInput.value);
+
+        		if (startDate >= endDate) {
+            		event.preventDefault(); // Stop form from submitting
+            		alert('The end time must be after the start time.');
+        		}
+    		});
         });
     </script>
 </head>

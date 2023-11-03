@@ -1,0 +1,15 @@
+<!-- authentication/profile.html -->
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Profile Page</h1>
+<h2>Your Archived Reservations</h2>
+<ul>
+	{% for reservation in archived_reservations %}
+		<li>{{ reservation.asset }} | {{ reservation.start_time }} - {{ reservation.end_time }}</li>
+	{% endfor %}
+</ul>
+
+<p><a href="{% url 'profile' %}">Return to My Profile</a></p>
+
+{% endblock %}

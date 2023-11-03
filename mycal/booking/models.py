@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from authentication.models import CustomUser
 
 # Create your models here.
@@ -25,3 +26,9 @@ class Reservation(models.Model):
 	
 	def __str__(self):
 		return f'{self.user.email} - {self.asset.name}'
+		
+	def can_be_cancelled(self):
+		return timezone.now() < self.start_time
+		
+	def cancel(self):
+		self.delete()

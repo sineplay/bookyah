@@ -8,15 +8,28 @@
 <p><a href="{% url 'update_profile' %}">Edit Profile</a><br>
    <a href="{% url 'password_change' %}">Change Password</a></p>
 
-<!-- User information update form would go here -->
-
-<h2> Your Reservations:</h2>
+<h2> Your Active Reservations:</h2>
 <ul>
-	{% for reservation in reservations %}
-		<li>{{ reservation.asset }} | {{ reservation.start_time }} &ndash; {{ reservation.end_time }}</li>
+	{% for reservation in active_reservations %}
+		<li>
+			{{ reservation.asset }} | {{ reservation.start_time }} &ndash; {{ reservation.end_time }}
+		</li>
 	{% endfor %}
 </ul>
 
-<!-- Password change form would go here -->
+<h2> Your Upcoming Reservations:</h2>
+<ul>
+	{% for reservation in upcoming_reservations %}
+		<li>
+			{{ reservation.asset }} | {{ reservation.start_time }} &ndash; {{ reservation.end_time }}
+			<a href="{% url 'modify_reservation' reservation.id %}">Modify</a> |
+			<a href="{% url 'cancel_reservation' reservation.id %}">Cancel</a>
+		</li>
+	{% endfor %}
+</ul>
+
+<p><a href="{% url 'archived_reservations' %}">View Archived Reservations</a></p>
+
+<p><a href="{% url 'create-reservation' %}">Create a new reservation</a></p>
 
 {% endblock %}
