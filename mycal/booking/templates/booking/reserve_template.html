@@ -1,8 +1,7 @@
-<!-- This is your form template, e.g., reservation_form.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <!-- Other head elements -->
+{% extends "base_generic.html" %}
+{% block title %}Make a Reservation - MyCal{% endblock %}
+
+{% block content %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let interval = 15; // Your time interval in minutes
@@ -42,13 +41,10 @@
     		});
         });
     </script>
-</head>
-<body>
     <!-- Your form elements -->
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Submit">
     </form>
-</body>
-</html>
+{% endblock %}
