@@ -1,10 +1,7 @@
-<!-- This is your form template, e.g., reservation_form.html -->
-<!DOCTYPE html>
-<html>
-<head>
-</head>
-<body>
+{% extends "base_generic.html" %}
+{% block title %}Reservation Successful - MyCal{% endblock %}
+
+{% block content %}
     <p>Reservation successful!</p>
     <p><a href="{% url 'profile' %}">View all reservations</a></p>
-</body>
-</html>
+{% endblock %}

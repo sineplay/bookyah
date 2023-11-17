@@ -46,5 +46,6 @@
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Submit">
+        <a href="{% url 'profile' %}" class="cancel-button">Cancel</a>
     </form>
 {% endblock %}
