@@ -1,9 +1,14 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from .models import Reservation  # Import your Reservation model
+from .models import Reservation, AssetType, Asset  # Import your Reservation model
 
 class ReservationForm(forms.ModelForm):
+	asset_type = forms.ModelChoiceField(
+		queryset=AssetType.objects.all(),
+		required=False,
+		label='Asset Type'
+	)
 	class Meta:
 		model = Reservation
 		fields = ['asset', 'start_time', 'end_time']  # include other relevant fields

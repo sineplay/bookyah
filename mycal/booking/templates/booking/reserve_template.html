@@ -1,51 +1,135 @@
 {% extends "base_generic.html" %}
+{% load widget_tweaks %}
 {% block title %}Make a Reservation - MyCal{% endblock %}
+{% block head %}
+	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+{% endblock %}
 
 {% block content %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let interval = 15; // Your time interval in minutes
-
-            // This function rounds the time to the nearest interval
-            function roundMinutes(date) {
-                date.setMinutes(Math.round(date.getMinutes() / interval) * interval);
-                date.setSeconds(0);
-                return date;
-            }
-
-            // Here we enforce the step for all inputs with the 'datetimefield' class
-            let datetimeFields = document.querySelectorAll('.datetimefield');
-            datetimeFields.forEach(function(field) {
-                field.step = interval * 60; // Step attribute should be in seconds
-
-                field.addEventListener('change', function(e) {
-                    let value = e.target.valueAsNumber;
-                    if (value) {
-                        let date = roundMinutes(new Date(value));
-                        e.target.valueAsNumber = date.getTime();
-                    }
-                });
-            });
             
-        	const form = document.querySelector('form');
-  			form.addEventListener('submit', function(event) {
-    		 	const startInput = document.querySelector('input[name="start_time"]');
-        		const endInput = document.querySelector('input[name="end_time"]');
-        		const startDate = new Date(startInput.value);
-        		const endDate = new Date(endInput.value);
-
-        		if (startDate >= endDate) {
-            		event.preventDefault(); // Stop form from submitting
-            		alert('The end time must be after the start time.');
-        		}
-    		});
         });
     </script>
     <!-- Your form elements -->
     <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit">
-        <a href="{% url 'profile' %}" class="cancel-button">Cancel</a>
+		{% csrf_token %}
+   		<p>
+        	{{ form.asset_type.label_tag }}
+        	{{ form.asset_type|add_class:'your-class' |attr:"id:id_asset_type" }}
+    	</p>
+    	<p>
+        	{{ form.asset.label_tag }}
+        	{{ form.asset|add_class:'your-class' |attr:"id:id_asset" }}
+    	</p>
+    	<!-- ... other fields ... -->
+    	<div id="calendar-message" style="display: none;">
+    	Select an asset above to view its availability.
+		</div>
+		<div id="calendar" style="display: none;"></div>
+
+    	<input type="submit" value="Submit">
+    	<a href="{% url 'profile' %}" class="cancel-button">Cancel</a>
     </form>
+    <script>
+	document.addEventListener('DOMContentLoaded', function() {
+    	var calendarEl = document.getElementById('calendar');
+    	var calendar = new FullCalendar.Calendar(calendarEl, {
+    	    initialView: 'timeGridWeek',
+    	    // other options here
+			events: function(fetchInfo, successCallback, failureCallback) {
+        		fetch('/reservation-data/')
+					.then(response => response.json())
+					.then(data => successCallback(data))
+					.catch(error => failureCallback(error));
+			},
+    	});
+    	calendar.render();
+    	
+    	let interval = 15; // Your time interval in minutes
+        const assetTypeSelect = document.getElementById('id_asset_type'); // Adjust the ID as per your form field
+		const assetSelect = document.getElementById('id_asset'); // Adjust the ID
+		const calendarMessage = document.getElementById('calendar-message');
+		
+		function updateCalendarVisibility() {
+			if (assetSelect.value) {
+				calendarMessage.style.display = 'none';
+				calendarEl.style.display = '';
+				calendar.refetchEvents();
+				setTimeout(function() {
+					calendar.updateSize();
+				}, 10);
+			} else {
+				calendarMessage.style.display = '';
+				calendarEl.style.display = 'none';
+			}
+		}
+			
+		assetTypeSelect.addEventListener('change', function(e) {
+    		const selectedType = e.target.value;
+			fetch(`/get-assets-for-type/${selectedType}`)
+           		.then(response => response.json())
+           		.then(data => {
+           			// Clear existing options in assetSelect
+               		assetSelect.innerHTML = '';
+               		
+               		let defaultOption = new Option("Please select...", "");
+               		assetSelect.add(defaultOption);
+               		
+               		// Populate assetSelect with new options
+               		data.assets.forEach(asset => {
+                   		let option = new Option(asset.name, asset.id);
+                   		assetSelect.add(option);
+               		});
+           		})
+           		.catch(error => console.error('Error:', error));
+    	});
+    		
+    	assetSelect.addEventListener('change', updateCalendarVisibility);
+   		updateCalendarVisibility();
+    		
+    	calendar.setOption('events', function(fetchInfo, successCallback, failureCallback) {
+    		var assetId = assetSelect.value;
+    		fetch(`/reservation-data/?asset_id=${assetId}`)
+    			.then(response => response.json())
+    			.then(data => successCallback(data))
+    			.catch(error => failureCallback(error));
+    	});
+
+        // This function rounds the time to the nearest interval
+        function roundMinutes(date) {
+            date.setMinutes(Math.round(date.getMinutes() / interval) * interval);
+            date.setSeconds(0);
+            return date;
+        }
+
+        // Here we enforce the step for all inputs with the 'datetimefield' class
+        let datetimeFields = document.querySelectorAll('.datetimefield');
+        datetimeFields.forEach(function(field) {
+            field.step = interval * 60; // Step attribute should be in seconds
+
+            field.addEventListener('change', function(e) {
+                let value = e.target.valueAsNumber;
+                if (value) {
+                    let date = roundMinutes(new Date(value));
+                    e.target.valueAsNumber = date.getTime();
+                }
+            });
+        });
+            
+        const form = document.querySelector('form');
+  		form.addEventListener('submit', function(event) {
+    	 	const startInput = document.querySelector('input[name="start_time"]');
+        	const endInput = document.querySelector('input[name="end_time"]');
+        	const startDate = new Date(startInput.value);
+        	const endDate = new Date(endInput.value);
+
+        	if (startDate >= endDate) {
+           		event.preventDefault(); // Stop form from submitting
+           		alert('The end time must be after the start time.');
+        	}
+    	});
+	});
+	</script>
+
 {% endblock %}
