@@ -27,6 +27,16 @@
     	Select an asset above to view its availability.
 		</div>
 		<div id="calendar" style="display: none;"></div>
+		
+		<p>
+			<label for="id_start_time">Start Time:</label>
+    		<input type="datetime-local" id="id_start_time" name="start_time">
+    	</p>
+
+    	<p>
+    		<label for="id_end_time">End Time:</label>
+    		<input type="datetime-local" id="id_end_time" name="end_time">
+    	</p>
 
     	<input type="submit" value="Submit">
     	<a href="{% url 'profile' %}" class="cancel-button">Cancel</a>
@@ -34,8 +44,85 @@
     <script>
 	document.addEventListener('DOMContentLoaded', function() {
     	var calendarEl = document.getElementById('calendar');
+    	var selectedEvent = null;
+    	
     	var calendar = new FullCalendar.Calendar(calendarEl, {
     	    initialView: 'timeGridWeek',
+    	    selectable: true,
+    	    selectMirror: true,
+    	    select: function(info) {
+    	    	var events = calendar.getEvents();
+    	    	var isDayBooked = events.some(function(event){
+    	    		var eventStart = event.start;
+    	    		var eventEnd = event.end || event.start;
+    	    		
+    	    		var overlaps = (eventStart < info.end) && (info.start < eventEnd);
+    	    		var spansAcross = (eventStart <= info.start) && (info.end <= eventEnd);
+    	    		
+    	    		return overlaps || spansAcross;
+    	    	});
+    	    	
+    	    	var startStr, endStr;
+    	    	
+    	    	if(info.allDay) {
+    	    		if(isDayBooked){
+    	    			alert('This day is already booked and cannot be reserved for all day.');
+    	    			return;
+    	    		}
+    	    		var startYear = info.start.getFullYear();
+    	    		var startMonth = (info.start.getMonth() + 1).toString().padStart(2, '0');
+    	    		var startDay = info.start.getDate().toString().padStart(2, '0');
+    	    		
+    	    		startStr = `${startYear}-${startMonth}-${startDay}T00:00`;
+    	    		
+    	    		var endDate = new Date(info.end);
+    	    		// endDate.setMinutes(endDate.getMinutes() - 1);
+    	    		// endDate.setDate(endDate.getDate() + 1);
+    	    		var endYear = endDate.getFullYear();
+    	    		var endMonth = (endDate.getMonth() + 1).toString().padStart(2, '0');
+    	    		var endDay = endDate.getDate().toString().padStart(2, '0');
+    	    		
+    	    		endStr = `${endYear}-${endMonth}-${endDay}T00:00`;
+    	    		console.log("Start String:", startStr);
+					console.log("End String:", endStr);
+    	    	} else {
+    	    		startStr = info.startStr.replace(' ', 'T').substring(0, 16);
+    	    		endStr = info.endStr.replace(' ', 'T').substring(0, 16);
+    	    		console.log("Start String:", startStr);
+					console.log("End String:", endStr);
+    	    	}
+    	    	
+    	    	document.getElementById('id_start_time').value = startStr;
+    	    	document.getElementById('id_end_time').value = endStr;
+    	    	
+    	    	if (selectedEvent) {
+    	    		// Update existing event
+    	    		selectedEvent.setDates(info.start, info.end);
+    	    	} else {
+    	    		// Create a new event
+    	    		selectedEvent = calendar.addEvent({
+    	    			title: 'Selected Time',
+    	    			start: info.start,
+    	    			end: info.end,
+    	    			allDay: info.allDay,
+    	    			isUserSelected: true
+    	    		});
+    	    	}
+    	    },
+    	    
+    	    eventClick: function(info) {
+    	    	if (info.event.extendedProps.isUserSelected) {
+    	    		if (confirm("Would you like to remove this selected time?")) {
+    	    			selectedEvent.remove();
+    	    			selectedEvent = null;
+    	    			document.getElementById('id_start_time').value = '';
+    	    			document.getElementById('id_end_time').value = '';
+    	    		}
+    	    	} else {
+    	    		// This is a pre-existing reservation, do nothing or handle differently
+    	    	}
+    	    },
+    	    
     	    // other options here
 			events: function(fetchInfo, successCallback, failureCallback) {
         		fetch('/reservation-data/')
@@ -46,6 +133,30 @@
     	});
     	calendar.render();
     	
+    	var startInput = document.getElementById('id_start_time');
+    	var endInput = document.getElementById('id_end_time');
+    	
+    	function addOrUpdateEvent() {
+    		var startTime = startInput.value;
+    		var endTime = endInput.value;
+    		
+    		if (startTime && endTime) {
+    			var events = calendar.getEvents();
+    			events.forEach(function(event) {
+    				event.remove();
+    			});
+    			
+    			calendar.addEvent({
+    				title: 'Selected Time',
+    				start: startTime,
+    				end: endTime
+    			});
+    		}
+    	}
+    	
+    	startInput.addEventListener('change', addOrUpdateEvent);
+    	endInput.addEventListener('change', addOrUpdateEvent);
+    	
     	let interval = 15; // Your time interval in minutes
         const assetTypeSelect = document.getElementById('id_asset_type'); // Adjust the ID as per your form field
 		const assetSelect = document.getElementById('id_asset'); // Adjust the ID
@@ -53,6 +164,14 @@
 		
 		function updateCalendarVisibility() {
 			if (assetSelect.value) {
+				if(selectedEvent){
+					selectedEvent.remove();
+					selectedEvent = null;
+				}
+				
+				document.getElementById('id_start_time').value = '';
+				document.getElementById('id_end_time').value = '';
+				
 				calendarMessage.style.display = 'none';
 				calendarEl.style.display = '';
 				calendar.refetchEvents();
