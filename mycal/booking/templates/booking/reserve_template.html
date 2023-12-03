@@ -53,6 +53,9 @@
     	    select: function(info) {
     	    	var events = calendar.getEvents();
     	    	var isDayBooked = events.some(function(event){
+    	    		if (selectedEvent && event.id === selectedEvent.id) {
+    	    			return false;
+    	    		}
     	    		var eventStart = event.start;
     	    		var eventEnd = event.end || event.start;
     	    		
@@ -62,11 +65,19 @@
     	    		return overlaps || spansAcross;
     	    	});
     	    	
+    	    	var isOverlap = events.some(function(event) {
+    	    		if (selectedEvent && event.id === selectedEvent.id) {
+    	    			return false;
+    	    		}
+    	    		return (info.start < event.end) && (event.start < info.end);
+    	    	});
+    	    	
     	    	var startStr, endStr;
     	    	
     	    	if(info.allDay) {
     	    		if(isDayBooked){
     	    			alert('This day is already booked and cannot be reserved for all day.');
+    	    			calendar.unselect();
     	    			return;
     	    		}
     	    		var startYear = info.start.getFullYear();
@@ -86,6 +97,11 @@
     	    		console.log("Start String:", startStr);
 					console.log("End String:", endStr);
     	    	} else {
+    	    		if (isOverlap){
+    	    			alert('This time slot overlaps with an existing reservation.');
+    	    			calendar.unselect();
+    	    			return;
+    	    		}
     	    		startStr = info.startStr.replace(' ', 'T').substring(0, 16);
     	    		endStr = info.endStr.replace(' ', 'T').substring(0, 16);
     	    		console.log("Start String:", startStr);
