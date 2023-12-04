@@ -6,18 +6,11 @@
 {% endblock %}
 
 {% block content %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            
-        });
-    </script>
+    <h2> Reserve {{ asset_type_name }}</h2>
+    <a href="{% url 'select-asset-type' %}">Change asset type</a>
     <!-- Your form elements -->
     <form method="post">
 		{% csrf_token %}
-   		<p>
-        	{{ form.asset_type.label_tag }}
-        	{{ form.asset_type|add_class:'your-class' |attr:"id:id_asset_type" }}
-    	</p>
     	<p>
         	{{ form.asset.label_tag }}
         	{{ form.asset|add_class:'your-class' |attr:"id:id_asset" }}
@@ -43,15 +36,47 @@
     </form>
     <script>
 	document.addEventListener('DOMContentLoaded', function() {
+		function generateUniqueId() {
+			return new Date().getTime().toString();
+		}
+		
+		function doesOverlapWithOthers(newStart, newEnd, events, selectedEvent) {
+			return events.some(function(event) {
+				if (selectedEvent && event.id === selectedEvent.id) {
+					return false;
+				}
+				
+				return (newStart < event.end) && (event.start < newEnd);
+			});
+		}
+	
     	var calendarEl = document.getElementById('calendar');
     	var selectedEvent = null;
     	
     	var calendar = new FullCalendar.Calendar(calendarEl, {
+    		timeZone: 'America/New_York',
     	    initialView: 'timeGridWeek',
     	    selectable: true,
     	    selectMirror: true,
     	    select: function(info) {
     	    	var events = calendar.getEvents();
+    	    	var originalEventDetails = selectedEvent ? {
+    	    		id: selectedEvent.id,
+    	    		title: selectedEvent.title,
+    	    		start: selectedEvent.start,
+    	    		end: selectedEvent.end,
+    	    		allDay: selectedEvent.allDay
+    	    	} : null;
+    	    	
+    	    	var isOverlap = doesOverlapWithOthers(info.start, info.end, events, selectedEvent);
+    	    	
+    	    	/* console.log("isOverlap is " + isOverlap);
+    	    	if (selectedEvent == null){
+    	    		console.log("selectedEvent is null");
+    	    	} else {
+    	    		console.log("selectedEvent is NOT null");
+    	    	} */
+    	    	
     	    	var isDayBooked = events.some(function(event){
     	    		if (selectedEvent && event.id === selectedEvent.id) {
     	    			return false;
@@ -65,21 +90,23 @@
     	    		return overlaps || spansAcross;
     	    	});
     	    	
-    	    	var isOverlap = events.some(function(event) {
-    	    		if (selectedEvent && event.id === selectedEvent.id) {
-    	    			return false;
-    	    		}
-    	    		return (info.start < event.end) && (event.start < info.end);
-    	    	});
+    	    	if (selectedEvent) {
+    	    		selectedEvent.remove();
+    	    		selectedEvent = null;
+    	    	}
     	    	
     	    	var startStr, endStr;
     	    	
     	    	if(info.allDay) {
     	    		if(isDayBooked){
     	    			alert('This day is already booked and cannot be reserved for all day.');
+    	    			if (originalEventDetails) {
+    	    				selectedEvent = calendar.addEvent(originalEventDetails);
+    	    			}
     	    			calendar.unselect();
     	    			return;
     	    		}
+    	    		
     	    		var startYear = info.start.getFullYear();
     	    		var startMonth = (info.start.getMonth() + 1).toString().padStart(2, '0');
     	    		var startDay = info.start.getDate().toString().padStart(2, '0');
@@ -94,36 +121,35 @@
     	    		var endDay = endDate.getDate().toString().padStart(2, '0');
     	    		
     	    		endStr = `${endYear}-${endMonth}-${endDay}T00:00`;
-    	    		console.log("Start String:", startStr);
-					console.log("End String:", endStr);
+    	    		/* console.log("Start String:", startStr);
+					console.log("End String:", endStr); */
     	    	} else {
     	    		if (isOverlap){
     	    			alert('This time slot overlaps with an existing reservation.');
+    	    			if (originalEventDetails) {
+    	    				selectedEvent = calendar.addEvent(originalEventDetails);
+    	    			}
     	    			calendar.unselect();
     	    			return;
     	    		}
+
     	    		startStr = info.startStr.replace(' ', 'T').substring(0, 16);
     	    		endStr = info.endStr.replace(' ', 'T').substring(0, 16);
-    	    		console.log("Start String:", startStr);
-					console.log("End String:", endStr);
+    	    		/* console.log("Start String:", startStr);
+					console.log("End String:", endStr); */
     	    	}
     	    	
     	    	document.getElementById('id_start_time').value = startStr;
     	    	document.getElementById('id_end_time').value = endStr;
     	    	
-    	    	if (selectedEvent) {
-    	    		// Update existing event
-    	    		selectedEvent.setDates(info.start, info.end);
-    	    	} else {
-    	    		// Create a new event
-    	    		selectedEvent = calendar.addEvent({
-    	    			title: 'Selected Time',
-    	    			start: info.start,
-    	    			end: info.end,
-    	    			allDay: info.allDay,
-    	    			isUserSelected: true
-    	    		});
-    	    	}
+    	    	selectedEvent = calendar.addEvent({
+    	    		id: generateUniqueId(),
+    	    		title: 'Selected Time',
+    	    		start: info.start,
+    	    		end: info.end,
+    	    		allDay: info.allDay,
+    	    		isUserSelected: true
+    	    	});
     	    },
     	    
     	    eventClick: function(info) {
@@ -174,7 +200,7 @@
     	endInput.addEventListener('change', addOrUpdateEvent);
     	
     	let interval = 15; // Your time interval in minutes
-        const assetTypeSelect = document.getElementById('id_asset_type'); // Adjust the ID as per your form field
+        // const assetTypeSelect = document.getElementById('id_asset_type'); // Adjust the ID as per your form field
 		const assetSelect = document.getElementById('id_asset'); // Adjust the ID
 		const calendarMessage = document.getElementById('calendar-message');
 		
@@ -199,26 +225,6 @@
 				calendarEl.style.display = 'none';
 			}
 		}
-			
-		assetTypeSelect.addEventListener('change', function(e) {
-    		const selectedType = e.target.value;
-			fetch(`/get-assets-for-type/${selectedType}`)
-           		.then(response => response.json())
-           		.then(data => {
-           			// Clear existing options in assetSelect
-               		assetSelect.innerHTML = '';
-               		
-               		let defaultOption = new Option("Please select...", "");
-               		assetSelect.add(defaultOption);
-               		
-               		// Populate assetSelect with new options
-               		data.assets.forEach(asset => {
-                   		let option = new Option(asset.name, asset.id);
-                   		assetSelect.add(option);
-               		});
-           		})
-           		.catch(error => console.error('Error:', error));
-    	});
     		
     	assetSelect.addEventListener('change', updateCalendarVisibility);
    		updateCalendarVisibility();

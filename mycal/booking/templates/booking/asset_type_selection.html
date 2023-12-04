@@ -1,0 +1,9 @@
+{% extends "base_generic.html" %}
+{% block title %}Make a Reservation - Type Selection - MyCal{% endblock %}
+
+{% block content %}
+	<h2>Select Asset Type</h2>
+{% for asset_type in asset_types %}
+	<a href="{% url 'create-reservation' asset_type.id %}" class="btn btn-primary">{{ asset_type.name }}</a>
+{% endfor %}
+{% endblock %}

@@ -25,6 +25,5 @@ urlpatterns = [
 	path('booking/', include('booking.urls')),
 	path('accounts/', include('django.contrib.auth.urls')),
 	path('auth/', include('authentication.urls')),
-	path('get-assets-for-type/<int:type_id>/', views.get_assets_for_type, name='get_assets_for_type'),
 	path('reservation-data/', views.reservation_data, name='reservation_data'),
 ]

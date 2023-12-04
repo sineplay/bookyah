@@ -4,11 +4,14 @@ from django.utils import timezone
 from .models import Reservation, AssetType, Asset  # Import your Reservation model
 
 class ReservationForm(forms.ModelForm):
-	asset_type = forms.ModelChoiceField(
-		queryset=AssetType.objects.all(),
-		required=False,
-		label='Asset Type'
-	)
+	def __init__(self, *args, **kwargs):
+		asset_type_id = kwargs.pop('asset_type_id', None)
+		super(ReservationForm, self).__init__(*args, **kwargs)
+		if asset_type_id:
+			self.fields['asset'].queryset = Asset.objects.filter(asset_type_id=asset_type_id)
+		else:
+			self.fields['asset'].queryset = Asset.objects.none()
+
 	class Meta:
 		model = Reservation
 		fields = ['asset', 'start_time', 'end_time']  # include other relevant fields
