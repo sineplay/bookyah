@@ -12,8 +12,12 @@ def select_asset_type(request):
 	asset_types = AssetType.objects.all()
 	return render(request, 'booking/asset_type_selection.html', {'asset_types': asset_types})
 	
-def create_reservation(request, asset_type_id):
+def create_reservation(request, asset_type_id=None):
 	asset_type = AssetType.objects.get(id=asset_type_id)
+	assets = Asset.objects.none() # Default to no assets
+	
+	if asset_type_id:
+		assets = Asset.objects.filter(asset_type_id=asset_type_id)
 	if request.method == 'POST':
 		form = ReservationForm(request.POST, asset_type_id=asset_type_id)
 		if form.is_valid():
@@ -37,11 +41,13 @@ def create_reservation(request, asset_type_id):
 			return redirect('reserve-success')
 	else:
 		form = ReservationForm(asset_type_id=asset_type_id)
+		assets = Asset.objects.filter(asset_type_id=asset_type_id) if asset_type_id else Asset.objects.none()
 		# form.fields['asset'].queryset = Asset.objects.none()
 		
 	return render(request, 'booking/reserve_template.html', {
 		'form': form,
-		'asset_type_name': asset_type.name
+		'asset_type_name': asset_type.name,
+		'assets': assets
 	})
 
 def reserve_success(request):

@@ -99,6 +99,30 @@ form button[type="submit"]:hover {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
 }
 
+.asset-button {
+    display: inline-block; /* Or 'block' if you want them to be on separate lines */
+    background-color: #FFFFFF;
+    color: black;
+    border: 2px solid black;
+    padding: 10px 20px; /* Padding for size */
+    margin: 5px; /* Margin for spacing */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Reasonable font size */
+    cursor: pointer; /* Cursor changes to pointer on hover */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+}
+
+.asset-button:hover {
+    background-color: #DFDFDF; /* Slightly gray for hover */
+}
+
+.asset-button.selected {
+    background-color: #4CAF50;
+    border: 2px solid #4CAF50;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow to lift the button off the page */
+}
+
 
 /* Utility Classes */
 .text-center {

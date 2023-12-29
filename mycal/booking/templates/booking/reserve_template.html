@@ -11,10 +11,17 @@
     <!-- Your form elements -->
     <form method="post">
 		{% csrf_token %}
-    	<p>
-        	{{ form.asset.label_tag }}
-        	{{ form.asset|add_class:'your-class' |attr:"id:id_asset" }}
-    	</p>
+		<h3>Select an asset</h3>
+    	<div id="asset-buttons">
+    		{% for asset in assets %}
+    		<button type="button" class="asset-button" data-asset-id="{{ asset.id }}">{{ asset.name }}</button>
+    		{% empty %}
+    		<p>No assets available for this type.</p>
+    		{% endfor %}
+		</div>
+		
+		<input type="hidden" id="id_selected_asset" name="asset" value="">
+
     	<!-- ... other fields ... -->
     	<div id="calendar-message" style="display: none;">
     	Select an asset above to view its availability.
@@ -201,7 +208,7 @@
     	
     	let interval = 15; // Your time interval in minutes
         // const assetTypeSelect = document.getElementById('id_asset_type'); // Adjust the ID as per your form field
-		const assetSelect = document.getElementById('id_asset'); // Adjust the ID
+		const assetSelect = document.getElementById('id_selected_asset'); // Adjust the ID
 		const calendarMessage = document.getElementById('calendar-message');
 		
 		function updateCalendarVisibility() {
@@ -225,9 +232,6 @@
 				calendarEl.style.display = 'none';
 			}
 		}
-    		
-    	assetSelect.addEventListener('change', updateCalendarVisibility);
-   		updateCalendarVisibility();
     		
     	calendar.setOption('events', function(fetchInfo, successCallback, failureCallback) {
     		var assetId = assetSelect.value;
@@ -269,6 +273,23 @@
            		event.preventDefault(); // Stop form from submitting
            		alert('The end time must be after the start time.');
         	}
+    	});
+    	
+    	// Handle asset button clicks
+    	document.getElementById('asset-buttons').addEventListener('click', function(e) {
+        	if(e.target && e.target.classList.contains('asset-button')) {
+            	var assetId = e.target.dataset.assetId;
+
+            	// Update button styles to indicate which is selected
+            	document.querySelectorAll('.asset-button').forEach(function(button) {
+                	button.classList.remove('selected');
+            	});
+            	e.target.classList.add('selected');
+            	
+            	document.getElementById('id_selected_asset').value = assetId;
+            	
+            	updateCalendarVisibility();
+       		}
     	});
 	});
 	</script>
