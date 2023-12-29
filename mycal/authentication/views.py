@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.views import generic
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from booking.models import Reservation
+from booking.forms import ReservationForm
 
 # Create your views here.
 class RegisterView(generic.CreateView):
@@ -51,8 +52,30 @@ def update_profile(request):
 	
 @login_required
 def modify_reservation_view(request, pk):
-	# Placeholder view function; you will need to implement the logic to modify a reservation
-	return HttpResponse("This will be the reservation modification page.")
+	try:
+		reservation = Reservation.objects.get(pk=pk, user=request.user)
+	except Reservation.DoesNotExist:
+		return HttpResponse("Reservation not found.", status=404)
+		
+	if request.method == 'POST':
+		form = ReservationForm(request.POST, instance=reservation, asset_type_id=reservation.asset.asset_type_id)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Your reservation has been updated.')
+			return redirect('profile')
+	else:
+		form = ReservationForm(instance=reservation, asset_type_id=reservation.asset.asset_type_id)
+		
+	formatted_start_time = reservation.start_time.strftime('%Y-%m-%dT%H:%M')
+	formatted_end_time = reservation.end_time.strftime('%Y-%m-%dT%H:%M')
+	
+	return render(request, 'booking/reserve_template.html', {
+		'form': form,
+		'reservation': reservation,
+		'formatted_start_time': formatted_start_time,
+		'formatted_end_time': formatted_end_time,
+		'is_modifying': True
+	})
 
 @login_required
 def cancel_reservation_view(request, pk):

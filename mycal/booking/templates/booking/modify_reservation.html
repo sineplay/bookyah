@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<h1>Modify Reservation</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <p>
+        {{ form.asset.label_tag }}: {{ reservation.asset }}
+    </p>
+    <p>
+        {{ form.start_time.label_tag }}
+        {{ form.start_time }}
+    </p>
+    <p>
+        {{ form.end_time.label_tag }}
+        {{ form.end_time }}
+    </p>
+    <input type="submit" value="Update Reservation">
+</form>
+
+<a href="{% url 'profile' %}">Back to Profile</a>
+{% endblock %}

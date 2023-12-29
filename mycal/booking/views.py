@@ -47,7 +47,8 @@ def create_reservation(request, asset_type_id=None):
 	return render(request, 'booking/reserve_template.html', {
 		'form': form,
 		'asset_type_name': asset_type.name,
-		'assets': assets
+		'assets': assets,
+		'is_modifying': False
 	})
 
 def reserve_success(request):
@@ -64,6 +65,7 @@ def reservation_data(request):
 	
 	reservation_data = [{
 		'title': reservation.asset.name,
+		'id': reservation.id,
 		'start': reservation.start_time.isoformat(),
 		'end': reservation.end_time.isoformat(),
 		# More fields as required by FullCalendar

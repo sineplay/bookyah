@@ -6,11 +6,16 @@
 {% endblock %}
 
 {% block content %}
-    <h2> Reserve {{ asset_type_name }}</h2>
-    <a href="{% url 'select-asset-type' %}">Change asset type</a>
+	{% if is_modifying %}
+		<h2>Modify Your Reservation</h2>
+	{% else %}
+    	<h2> Reserve {{ asset_type_name }}</h2>
+    	<a href="{% url 'select-asset-type' %}">Change asset type</a>
+    {% endif %}
     <!-- Your form elements -->
     <form method="post">
 		{% csrf_token %}
+		{% if not is_modifying %}
 		<h3>Select an asset</h3>
     	<div id="asset-buttons">
     		{% for asset in assets %}
@@ -19,9 +24,12 @@
     		<p>No assets available for this type.</p>
     		{% endfor %}
 		</div>
-		
 		<input type="hidden" id="id_selected_asset" name="asset" value="">
-
+		{% else %}
+		<h3>Asset: {{ reservation.asset.name }} (Reservation #{{ reservation.id }})</h3>
+		<input type="hidden" id="id_selected_asset" name="asset" value="{{ reservation.asset.id }}">
+		{% endif %}
+		
     	<!-- ... other fields ... -->
     	<div id="calendar-message" style="display: none;">
     	Select an asset above to view its availability.
@@ -30,39 +38,51 @@
 		
 		<p>
 			<label for="id_start_time">Start Time:</label>
-    		<input type="datetime-local" id="id_start_time" name="start_time">
+    		<input type="datetime-local" id="id_start_time" name="start_time" value="{{ formatted_start_time }}">
     	</p>
 
     	<p>
     		<label for="id_end_time">End Time:</label>
-    		<input type="datetime-local" id="id_end_time" name="end_time">
+    		<input type="datetime-local" id="id_end_time" name="end_time" value="{{ formatted_end_time }}">
     	</p>
 
+		{% if is_modifying %}
+		<input type="submit" value="Update Reservation">
+		{% else %}
     	<input type="submit" value="Submit">
+    	{% endif %}
     	<a href="{% url 'profile' %}" class="cancel-button">Cancel</a>
     </form>
     <script>
 	document.addEventListener('DOMContentLoaded', function() {
-		function generateUniqueId() {
-			return new Date().getTime().toString();
-		}
-		
-		function doesOverlapWithOthers(newStart, newEnd, events, selectedEvent) {
-			return events.some(function(event) {
-				if (selectedEvent && event.id === selectedEvent.id) {
-					return false;
-				}
-				
-				return (newStart < event.end) && (event.start < newEnd);
-			});
-		}
-	
-    	var calendarEl = document.getElementById('calendar');
+		var isModifying = {{ is_modifying|yesno:"true,false" }};
+		var modifyingReservationId = parseInt("{{ reservation.id }}", 10);
+		const assetSelect = document.getElementById('id_selected_asset');
+		const calendarMessage = document.getElementById('calendar-message');
+		var calendarEl = document.getElementById('calendar');
     	var selectedEvent = null;
-    	
     	var calendar = new FullCalendar.Calendar(calendarEl, {
     		timeZone: 'America/New_York',
     	    initialView: 'timeGridWeek',
+    	   /* eventContent: function(arg) {
+        // Create an array to hold the title and ID
+        		var arrayOfDomNodes = [];
+
+        // Title element (standard)
+		        var titleEl = document.createElement('div');
+		        titleEl.innerHTML = arg.event.title;
+		        arrayOfDomNodes.push(titleEl);
+
+        // ID element for debugging
+		        if (arg.event.id) {  // Check if the ID exists
+		            var idEl = document.createElement('div');
+		            idEl.style.fontSize = '0.8em';  // Smaller font size for the ID
+		            idEl.style.opacity = '0.6';     // Lighter color for a less obtrusive display
+		            idEl.innerHTML = 'ID: ' + arg.event.id; // The text to display
+		            arrayOfDomNodes.push(idEl);    // Add to the array of elements to be displayed
+		        }
+		        return { domNodes: arrayOfDomNodes };
+		    }, */
     	    selectable: true,
     	    selectMirror: true,
     	    select: function(info) {
@@ -76,13 +96,6 @@
     	    	} : null;
     	    	
     	    	var isOverlap = doesOverlapWithOthers(info.start, info.end, events, selectedEvent);
-    	    	
-    	    	/* console.log("isOverlap is " + isOverlap);
-    	    	if (selectedEvent == null){
-    	    		console.log("selectedEvent is null");
-    	    	} else {
-    	    		console.log("selectedEvent is NOT null");
-    	    	} */
     	    	
     	    	var isDayBooked = events.some(function(event){
     	    		if (selectedEvent && event.id === selectedEvent.id) {
@@ -121,8 +134,6 @@
     	    		startStr = `${startYear}-${startMonth}-${startDay}T00:00`;
     	    		
     	    		var endDate = new Date(info.end);
-    	    		// endDate.setMinutes(endDate.getMinutes() - 1);
-    	    		// endDate.setDate(endDate.getDate() + 1);
     	    		var endYear = endDate.getFullYear();
     	    		var endMonth = (endDate.getMonth() + 1).toString().padStart(2, '0');
     	    		var endDay = endDate.getDate().toString().padStart(2, '0');
@@ -142,8 +153,6 @@
 
     	    		startStr = info.startStr.replace(' ', 'T').substring(0, 16);
     	    		endStr = info.endStr.replace(' ', 'T').substring(0, 16);
-    	    		/* console.log("Start String:", startStr);
-					console.log("End String:", endStr); */
     	    	}
     	    	
     	    	document.getElementById('id_start_time').value = startStr;
@@ -173,17 +182,66 @@
     	    },
     	    
     	    // other options here
-			events: function(fetchInfo, successCallback, failureCallback) {
+			/* events: function(fetchInfo, successCallback, failureCallback) {
         		fetch('/reservation-data/')
 					.then(response => response.json())
-					.then(data => successCallback(data))
+					.then(data => {
+						const events = data.map(event => {
+							if (event.id === modifyingReservationId) {
+								event.color = '#add8e6';
+								event.editing = true;
+							}
+							return event;
+						});
+						successCallback(events);
+					})
 					.catch(error => failureCallback(error));
-			},
+			},*/
     	});
     	calendar.render();
     	
     	var startInput = document.getElementById('id_start_time');
     	var endInput = document.getElementById('id_end_time');
+		
+		function generateUniqueId() {
+			return new Date().getTime().toString();
+		}
+		
+		function doesOverlapWithOthers(newStart, newEnd, events, selectedEvent) {
+			return events.some(function(event) {
+				if ((selectedEvent && event.id === selectedEvent.id) || event.extendedProps.editing) {
+					return false;
+				}
+				
+				return (newStart < event.end) && (event.start < newEnd);
+			});
+		}
+		
+		function initializeCalendarForAsset(assetId) {
+			updateCalendarVisibility();
+		}
+		
+		if (isModifying){
+			var selectedAssetId = document.getElementById('id_selected_asset').value;
+			initializeCalendarForAsset(selectedAssetId);
+		} else {
+			// Handle asset button clicks
+    		document.getElementById('asset-buttons').addEventListener('click', function(e) {
+        		if(e.target && e.target.classList.contains('asset-button')) {
+            		var assetId = e.target.dataset.assetId;
+
+	            	// Update button styles to indicate which is selected
+    	        	document.querySelectorAll('.asset-button').forEach(function(button) {
+        	        	button.classList.remove('selected');
+            		});
+            		e.target.classList.add('selected');
+            	
+	            	document.getElementById('id_selected_asset').value = assetId;
+            	
+    	        	updateCalendarVisibility();
+       			}
+    		});
+		}
     	
     	function addOrUpdateEvent() {
     		var startTime = startInput.value;
@@ -208,18 +266,15 @@
     	
     	let interval = 15; // Your time interval in minutes
         // const assetTypeSelect = document.getElementById('id_asset_type'); // Adjust the ID as per your form field
-		const assetSelect = document.getElementById('id_selected_asset'); // Adjust the ID
-		const calendarMessage = document.getElementById('calendar-message');
-		
+				
 		function updateCalendarVisibility() {
 			if (assetSelect.value) {
 				if(selectedEvent){
 					selectedEvent.remove();
 					selectedEvent = null;
+					document.getElementById('id_start_time').value = '';
+					document.getElementById('id_end_time').value = '';
 				}
-				
-				document.getElementById('id_start_time').value = '';
-				document.getElementById('id_end_time').value = '';
 				
 				calendarMessage.style.display = 'none';
 				calendarEl.style.display = '';
@@ -237,7 +292,16 @@
     		var assetId = assetSelect.value;
     		fetch(`/reservation-data/?asset_id=${assetId}`)
     			.then(response => response.json())
-    			.then(data => successCallback(data))
+    			.then(data => {
+    				const events = data.map(event => {
+    					if (event.id === modifyingReservationId) {
+    						event.color = '#add8e6';
+    						event.editing = true;
+    					}
+    					return event;
+    				});
+    				successCallback(events)
+    			})
     			.catch(error => failureCallback(error));
     	});
 
@@ -273,23 +337,6 @@
            		event.preventDefault(); // Stop form from submitting
            		alert('The end time must be after the start time.');
         	}
-    	});
-    	
-    	// Handle asset button clicks
-    	document.getElementById('asset-buttons').addEventListener('click', function(e) {
-        	if(e.target && e.target.classList.contains('asset-button')) {
-            	var assetId = e.target.dataset.assetId;
-
-            	// Update button styles to indicate which is selected
-            	document.querySelectorAll('.asset-button').forEach(function(button) {
-                	button.classList.remove('selected');
-            	});
-            	e.target.classList.add('selected');
-            	
-            	document.getElementById('id_selected_asset').value = assetId;
-            	
-            	updateCalendarVisibility();
-       		}
     	});
 	});
 	</script>

@@ -6,11 +6,16 @@ from .models import Reservation, AssetType, Asset  # Import your Reservation mod
 class ReservationForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		asset_type_id = kwargs.pop('asset_type_id', None)
+		self.reservation_instance = kwargs.get('instance', None)
 		super(ReservationForm, self).__init__(*args, **kwargs)
 		if asset_type_id:
 			self.fields['asset'].queryset = Asset.objects.filter(asset_type_id=asset_type_id)
 		else:
 			self.fields['asset'].queryset = Asset.objects.none()
+			
+		# Make the asset field read-only if it's an update
+		if self.reservation_instance:
+			self.fields['asset'].disabled = True
 
 	class Meta:
 		model = Reservation
