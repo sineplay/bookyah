@@ -36,14 +36,15 @@
 		</div>
 		<div id="calendar" style="display: none;"></div>
 		
+		<span id="dateTimeSelect" style="display: none;">
 		<p>
-			<label for="id_start_time">Start Time:</label>
-    		<input type="datetime-local" id="id_start_time" name="start_time" value="{{ formatted_start_time }}"> (must be later than <span id="current-time"></span>)
+			{{ form.start_time.label_tag }} {{ form.start_time }}
+			{{ form.start_time.errors }}
     	</p>
 
     	<p>
-    		<label for="id_end_time">End Time:</label>
-    		<input type="datetime-local" id="id_end_time" name="end_time" value="{{ formatted_end_time }}">
+    		{{ form.end_time.label_tag }} {{ form.end_time }}
+    		{{ form.end_time.errors }}
     	</p>
 
 		{% if is_modifying %}
@@ -51,6 +52,7 @@
 		{% else %}
     	<input type="submit" value="Submit">
     	{% endif %}
+    	</span>
     	<a href="{% url 'profile' %}" class="cancel-button">Cancel</a>
     </form>
     <script>
@@ -59,6 +61,7 @@
 		var modifyingReservationId = parseInt("{{ reservation.id }}", 10);
 		const assetSelect = document.getElementById('id_selected_asset');
 		const calendarMessage = document.getElementById('calendar-message');
+		const dateTimeSelect = document.getElementById('dateTimeSelect');
 		var calendarEl = document.getElementById('calendar');
     	var selectedEvent = null;
     	var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -86,7 +89,6 @@
     	    selectable: true,
     	    selectAllow: function(selectInfo) {
     	    	var currentDateTime = new Date();
-    	    	// document.getElementById("current-time").innerHTML = currentDateTime;
     	    	
     	    	if (selectInfo.start < currentDateTime) {
     	    		return false;
@@ -287,6 +289,7 @@
 				
 				calendarMessage.style.display = 'none';
 				calendarEl.style.display = '';
+				dateTimeSelect.style.display = '';
 				calendar.refetchEvents();
 				setTimeout(function() {
 					calendar.updateSize();
@@ -294,6 +297,7 @@
 			} else {
 				calendarMessage.style.display = '';
 				calendarEl.style.display = 'none';
+				dateTimeSelect.style.display = 'none';
 			}
 		}
     		
@@ -341,10 +345,16 @@
         	const endInput = document.querySelector('input[name="end_time"]');
         	const startDate = new Date(startInput.value);
         	const endDate = new Date(endInput.value);
+        	const currentTime = new Date();
 
-        	if (startDate >= endDate) {
+        	/* if (startDate >= endDate) {
            		event.preventDefault(); // Stop form from submitting
            		alert('The end time must be after the start time.');
+        	} */
+        	
+        	if (startDate < currentTime) {
+        		event.preventDefault();
+        		alert('The start time must be in the future.');
         	}
     	});
 	});

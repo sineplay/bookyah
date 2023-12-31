@@ -23,7 +23,10 @@
 		<li>
 			{{ reservation.asset }} | {{ reservation.start_time }} &ndash; {{ reservation.end_time }}
 			<a href="{% url 'modify_reservation' reservation.id %}">Modify</a> |
-			<a href="{% url 'cancel_reservation' reservation.id %}">Cancel</a>
+			<a href="{% url 'cancel_reservation' reservation.id %}"
+				class="cancel-link"
+				data-reservation-id="{{ reservation.id }}"
+				data-reservation-details="{{ reservation.asset }} from {{ reservation.start_time|date:'F d, Y g:ia' }} to {{ reservation.end_time|date:'F d, Y g:ia'}}">Cancel</a>
 		</li>
 	{% endfor %}
 </ul>
@@ -31,5 +34,31 @@
 <p><a href="{% url 'archived_reservations' %}">View Archived Reservations</a></p>
 
 <p><a href="{% url 'select-asset-type' %}">Create a new reservation</a></p>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var cancelLinks = document.querySelectorAll('.cancel-link');  // Get all cancel links
+
+    cancelLinks.forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent the link from navigating immediately
+            
+            // Extract reservation details
+            var reservationId = this.getAttribute('data-reservation-id');
+            var reservationDetails = this.getAttribute('data-reservation-details');
+
+            // Confirmation message with details
+            var confirmationMessage = 'Are you sure you want to cancel this reservation?\n' + reservationDetails;
+            var confirmation = confirm(confirmationMessage);
+
+            if (confirmation) {
+                // If the user confirms, proceed with cancellation
+                window.location.href = this.href;
+            }
+            // If the user does not confirm, do nothing (the link won't be followed)
+        });
+    });
+});
+</script>
 
 {% endblock %}

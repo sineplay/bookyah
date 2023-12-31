@@ -51,6 +51,24 @@ form select {
     border-radius: 4px;
 }
 
+form input[type="datetime-local"] {
+    border: 1px solid #ccc;       /* Light grey border */
+    padding: 8px;                 /* Padding for a larger click area and more space */
+    border-radius: 4px;           /* Rounded corners */
+    font-family: Arial, sans-serif; /* Consistent font */
+}
+
+form input[type="datetime-local"]:hover {
+    border-color: #888;           /* Darken the border a bit when hovered */
+}
+
+form input[type="datetime-local"]:focus {
+    border-color: #4A90E2;        /* Highlight color when focused */
+    outline: none;                /* Remove the default focus outline */
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5); /* Soft glow effect */
+}
+
+
 form input[type="submit"],
 form button[type="submit"],
 .cancel-button {
@@ -123,6 +141,36 @@ form button[type="submit"]:hover {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow to lift the button off the page */
 }
 
+.messages {
+	color: #008f08;
+    background-color: #baffba;
+    border: 1px solid #008f08;
+    padding: 10px 20px;
+    margin: 10px 0 20px 0; /* Add some margin at the bottom */
+    border-radius: 5px;
+    list-style-type: none;
+    font-family: Arial, sans-serif; /* Consistent font */
+    font-size: 0.95em; /* Slightly smaller font size */
+}
+
+.errorlist {
+    color: #d8000c;
+    background-color: #ffbaba;
+    border: 1px solid #d8000c;
+    padding: 10px 20px;
+    margin: 10px 0 20px 0; /* Add some margin at the bottom */
+    border-radius: 5px;
+    list-style-type: none;
+    font-family: Arial, sans-serif; /* Consistent font */
+    font-size: 0.95em; /* Slightly smaller font size */
+}
+
+.errorlist li, .messages li {
+    margin-bottom: 5px; /* Space out individual errors */
+    font-size: 0.9em;   /* Slightly smaller font size for error messages */
+}
+
+
 
 /* Utility Classes */
 .text-center {
@@ -133,5 +181,10 @@ form button[type="submit"]:hover {
 @media only screen and (max-width: 600px) {
     main {
         padding: 1rem 0.5rem;
+    }
+    
+    form input[type="datetime-local"] {
+        width: 100%;              /* Full width on smaller screens */
+        padding: 10px;            /* Larger padding for easier interaction */
     }
 }
