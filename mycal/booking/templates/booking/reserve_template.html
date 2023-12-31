@@ -38,7 +38,7 @@
 		
 		<p>
 			<label for="id_start_time">Start Time:</label>
-    		<input type="datetime-local" id="id_start_time" name="start_time" value="{{ formatted_start_time }}">
+    		<input type="datetime-local" id="id_start_time" name="start_time" value="{{ formatted_start_time }}"> (must be later than <span id="current-time"></span>)
     	</p>
 
     	<p>
@@ -62,7 +62,7 @@
 		var calendarEl = document.getElementById('calendar');
     	var selectedEvent = null;
     	var calendar = new FullCalendar.Calendar(calendarEl, {
-    		timeZone: 'America/New_York',
+    		// timeZone: 'America/New_York',
     	    initialView: 'timeGridWeek',
     	   /* eventContent: function(arg) {
         // Create an array to hold the title and ID
@@ -84,6 +84,15 @@
 		        return { domNodes: arrayOfDomNodes };
 		    }, */
     	    selectable: true,
+    	    selectAllow: function(selectInfo) {
+    	    	var currentDateTime = new Date();
+    	    	// document.getElementById("current-time").innerHTML = currentDateTime;
+    	    	
+    	    	if (selectInfo.start < currentDateTime) {
+    	    		return false;
+    	    	}
+    	    	return true;
+    	    },
     	    selectMirror: true,
     	    select: function(info) {
     	    	var events = calendar.getEvents();
