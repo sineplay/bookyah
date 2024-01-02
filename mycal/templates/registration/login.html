@@ -1,5 +1,7 @@
 {% extends "base_generic.html" %}
 
+{% block title %}Login - BookYah!{% endblock %}
+
 {% block content %}
 
 {% if form.errors %}
@@ -21,5 +23,9 @@
     <input type="submit" value="login" />
     <input type="hidden" name="next" value="{{ next }}" />
 </form>
+
+<p class="register-link">
+    New user? <a href="{% url 'register' %}">Create your account</a>
+</p>
 
 {% endblock %}

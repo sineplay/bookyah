@@ -1,6 +1,6 @@
 {% extends "base_generic.html" %}
 {% load widget_tweaks %}
-{% block title %}Make a Reservation - MyCal{% endblock %}
+{% block title %}Make a Reservation - BookYah!{% endblock %}
 {% block head %}
 	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
 {% endblock %}
@@ -9,8 +9,10 @@
 	{% if is_modifying %}
 		<h2>Modify Your Reservation</h2>
 	{% else %}
-    	<h2> Reserve {{ asset_type_name }}</h2>
-    	<a href="{% url 'select-asset-type' %}">Change asset type</a>
+    	<div class="header-with-link">
+    		<h2 style="display: inline;">Reserve {{ asset_type_name }}</h2>
+    		<a href="{% url 'select-asset-type' %}">(change asset type)</a>
+    	</div>
     {% endif %}
     <!-- Your form elements -->
     <form method="post">

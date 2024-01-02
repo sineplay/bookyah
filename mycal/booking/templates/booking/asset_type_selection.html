@@ -1,9 +1,12 @@
 {% extends "base_generic.html" %}
-{% block title %}Make a Reservation - Type Selection - MyCal{% endblock %}
+{% block title %}Make a Reservation - Type Selection - BookYah!{% endblock %}
 
 {% block content %}
 	<h2>Select Asset Type</h2>
 {% for asset_type in asset_types %}
-	<a href="{% url 'create-reservation' asset_type.id %}" class="btn btn-primary">{{ asset_type.name }}</a>
+	<a href="{% url 'create-reservation' asset_type.id %}" class="asset-type-button">
+		<i class="{{ asset_type.fa_icon }}"></i>
+		<span>{{ asset_type.name }}</span>
+	</a>
 {% endfor %}
 {% endblock %}

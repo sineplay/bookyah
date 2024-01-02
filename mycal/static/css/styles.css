@@ -20,8 +20,71 @@ header a, footer a {
     text-decoration: none;
 }
 
+header .title {
+	font-family: 'Orbitron', sans-serif;
+	font-size: 65px;
+	margin: 0;
+}
+
+nav ul.nav-menu {
+    list-style-type: none;  /* Remove default list bullets */
+    padding: 0;             /* Remove default padding */
+    margin: 0;              /* Remove default margin */
+    display: flex;          /* Display the menu items inline */
+    justify-content: center;/* Center the menu items */
+    gap: 20px;              /* Space between menu items */
+}
+
+nav ul.nav-menu li {
+    display: inline;        /* Inline display for list items */
+}
+
+nav ul.nav-menu li a {
+    color: #fff;            /* White text */
+    text-decoration: none;  /* Remove underline */
+    font-weight: bold;      /* Bold font for better visibility */
+    padding: 5px 10px;      /* Padding for a larger click area */
+}
+
+nav ul.nav-menu li a:hover {
+    background-color: #004080; /* Darker blue background on hover */
+    border-radius: 5px;        /* Rounded corners for the hover effect */
+}
+
+.header-with-link {
+    display: flex;            /* Align items in a row */
+    align-items: center;      /* Center items vertically */
+    justify-content: start;   /* Align items to the start of the container */
+    gap: 10px;                /* Space between the h2 and the link */
+}
+
+.header-with-link h2 {
+    margin: 0;                /* Remove default margin */
+    padding-top: 20px;        /* Add custom spacing above */
+    padding-bottom: 10px;     /* Add custom spacing below */
+}
+
+.header-with-link a {
+	margin-top: 14px;
+    text-decoration: underline; /* Optionally, make it clear it's a clickable link */
+}
+
 main {
     padding: 1rem;
+}
+
+.register-link {
+    margin-top: 20px;  /* Add some space above the link */
+    text-align: center; /* Center the link text */
+}
+
+.register-link a {
+    color: #00335B; /* Use your site's primary color */
+    text-decoration: underline; /* Underline to signify it's clickable */
+}
+
+.register-link a:hover {
+    text-decoration: none; /* Remove underline on hover for a change */
 }
 
 /* Forms and inputs */
@@ -68,15 +131,21 @@ form input[type="datetime-local"]:focus {
     box-shadow: 0 0 5px rgba(74, 144, 226, 0.5); /* Soft glow effect */
 }
 
+form .fc {
+	margin-top: 20px;
+}
+
 
 form input[type="submit"],
 form button[type="submit"],
 .cancel-button {
     display: inline-block;
-    background-color: #008751;
+    background-color: #008751; /* MWCC Green */
     color: #fff;
     border: none;
     padding: 10px 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     cursor: pointer;
     border-radius: 4px;
     text-decoration: none;
@@ -101,20 +170,55 @@ form button[type="submit"]:hover {
 }
 
 .btn {
-    background-color: #f1b434;  /* Orange color */
-    color: white;              /* White text color for contrast */
-    border: none;              /* No border */
-    padding: 10px 20px;        /* Padding for size */
-    margin: 5px;               /* Margin for spacing */
-    border-radius: 5px;        /* Rounded corners */
-    font-size: 16px;           /* Reasonable font size */
-    cursor: pointer;           /* Cursor changes to pointer on hover */
-    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    display: inline-block;
+    background-color: #00335B; /* MWCC Blue */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    font-size: 16px;
+    height: 40px;
+    line-height: 20px;
+    box-sizing: border-box;
 }
 
 .btn:hover {
-    background-color: #e1a233; /* Slightly darker shade of orange for hover */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    background-color: #002242; /* Darker blue on hover */
+}
+
+.asset-type-button {
+    display: inline-flex;        /* Aligns icon and text side by side */
+    flex-direction: column;     /* Stack the icon and text vertically */
+    align-items: center;        /* Center align items */
+    justify-content: center;    /* Center content */
+    width: 120px;               /* Set a fixed width */
+    height: 120px;              /* Set a fixed height to make it square */
+    background-color: #00335B;  /* Blue background */
+    color: white;               /* White text */
+    text-decoration: none;      /* Remove underline from text */
+    padding: 10px;              /* Some padding around the content */
+    border-radius: 10px;        /* Rounded corners */
+    transition: transform 0.2s; /* Smooth transition for hover effect */
+}
+
+.asset-type-button:hover {
+    transform: scale(1.05);     /* Slightly enlarge buttons on hover */
+    text-decoration: none;      /* Ensure no underline on hover */
+}
+
+.asset-type-button i {  /* Targeting the icon specifically */
+    font-size: 2em;     /* Increase the size of the icon */
+    margin-bottom: 5px; /* Space between icon and text */
+}
+
+.asset-type-button span { /* Targeting the text specifically */
+    display: block;     /* Ensure it takes its own line */
+    font-size: 0.8em;   /* Adjust text size as needed */
 }
 
 .asset-button {

@@ -6,6 +6,7 @@ from authentication.models import CustomUser
 
 class AssetType(models.Model):
 	name = models.CharField(max_length=255)
+	fa_icon = models.CharField(max_length=100, blank=True, help_text="Font Awesome icon class (e.g., 'fas fa-camera')")
 	
 	def __str__(self):
 		return self.name

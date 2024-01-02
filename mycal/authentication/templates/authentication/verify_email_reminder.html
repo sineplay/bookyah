@@ -1,0 +1,9 @@
+{% extends "base_generic.html" %}
+
+{% block title %}Verify Your Email - BookYah{% endblock %}
+
+{% block content %}
+<h2>Email Verification Required</h2>
+<p>Your email address has not been verified. Please check your inbox (and spam folder) for the verification email we sent you. Follow the link in that email to verify your account.</p>
+<p>If you did not receive the email, <a href="{% url 'resend_verification_email' %}">click here to resend it</a>.</p>
+{% endblock %}

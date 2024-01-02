@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from decouple import config
 from pathlib import Path
 import os
 
@@ -38,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'authentication',
+	'authentication.apps.AuthenticationConfig',
 	'booking',
 	'widget_tweaks',
 ]
@@ -132,3 +133,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'authentication.CustomUser'  # 'authentication' is the app name
 
 LOGIN_REDIRECT_URL = '/auth/profile/'
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST')  # The host of your email service provider
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)  # Common ports are 25, 587 (for TLS), and 465 (SSL), adjust as necessary
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)  # Use True for TLS, False for not
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')  # Your SMTP username
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')  # Your SMTP password
+DEFAULT_FROM_EMAIL = 'bookyah@example.com'  # Default email address to use for various automated correspondence

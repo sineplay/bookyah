@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
+
 class CustomUserManager(BaseUserManager):
 	"""
 	Custom user model manager where email is the unique identifier for
@@ -38,6 +39,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 	last_name = models.CharField(max_length=30, blank=True)
 	is_active = models.BooleanField(default=True)
 	is_staff = models.BooleanField(default=False)
+	email_verified = models.BooleanField(default=False)
     # other fields...
 	
 	objects = CustomUserManager()

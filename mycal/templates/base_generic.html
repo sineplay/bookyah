@@ -3,13 +3,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}MyCal{% endblock %}</title>
+    <title>{% block title %}BookYah!{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet"> 
     {% block head %}{% endblock %}
 </head>
 <body>
     <header>
-        <!-- Navigation and titles can go here -->
+        <h1 class="title">BOOKYAH</h1>
+        <nav>
+            <ul class="nav-menu">
+                {% if user.is_authenticated %}
+                    <!-- Links for logged-in users -->
+                    <li><a href="{% url 'select-asset-type' %}">Create Reservation</a></li>
+                    <li><a href="{% url 'profile' %}">Profile</a></li>
+                    {% if user.is_staff %}
+                        <li><a href="{% url 'admin:index' %}">Admin</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <!-- Link for guests -->
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
     </header>
 
     <main>
@@ -24,7 +44,7 @@
     </main>
 
     <footer>
-        <!-- Footer content can go here -->
+        Copyright &copy; 2024 Brett Moulton
     </footer>
 </body>
 </html>

@@ -1,14 +1,21 @@
 <!-- authentication/profile.html -->
 {% extends "base_generic.html" %}
+{% block title %}Profile - BookYah{% endblock %}
 
 {% block content %}
 <h1>Profile Page</h1>
 <p>Hello, {{ user.first_name }} {{ user.last_name }}!</p>
-<p>Email: {{ user.email }}</p>
+<p>Email: {{ user.email }}
+{% if request.user.email_verified %}
+	(Verified)
+{% else %}
+	(Not verified. <a href="{% url 'resend_verification_email' %}">Click to resend verification email</a>)
+{% endif %}</p>
 <p><a href="{% url 'update_profile' %}">Edit Profile</a><br>
    <a href="{% url 'password_change' %}">Change Password</a></p>
 
 <h2> Your Active Reservations:</h2>
+{% if active_reservations %}
 <ul>
 	{% for reservation in active_reservations %}
 		<li>
@@ -16,8 +23,12 @@
 		</li>
 	{% endfor %}
 </ul>
+{% else %}
+<p><em>No active reservations.</em></p>
+{% endif %}
 
 <h2> Your Upcoming Reservations:</h2>
+{% if upcoming_reservations %}
 <ul>
 	{% for reservation in upcoming_reservations %}
 		<li>
@@ -30,10 +41,13 @@
 		</li>
 	{% endfor %}
 </ul>
+{% else %}
+<p><em>No upcoming reservations.</em></p>
+{% endif %}
 
-<p><a href="{% url 'archived_reservations' %}">View Archived Reservations</a></p>
-
-<p><a href="{% url 'select-asset-type' %}">Create a new reservation</a></p>
+<p><a href="{% url 'select-asset-type' %}" class="btn">Create a new reservation</a>
+<a href="{% url 'archived_reservations' %}" class="btn">View Archived Reservations</a>
+ </p>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

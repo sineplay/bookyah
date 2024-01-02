@@ -1,7 +1,9 @@
 {% extends "base_generic.html" %}
 
+{% block title %}Create Your Account - BookYah{% endblock %}
+
 {% block content %}
-	<h2>Sign up</h2>
+	<h2>Create Your Account</h2>
 	<form method="post">
 		{% csrf_token %}
 		{{ form.as_p }}
