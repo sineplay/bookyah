@@ -1,0 +1,28 @@
+{% extends 'admin/base_site.html' %}  <!-- Extends the base admin template -->
+{% block extrahead %}
+	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+{% endblock %}
+
+{% block content %}
+<div id='calendar'></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        // FullCalendar configuration
+        initialView: 'timeGridWeek',
+        editable: true,
+        selectable: true,
+        events: '/admin-reservation-data/',  // URL to fetch events
+        eventClick: function(info) {
+        	var reservationId = info.event.id;
+        	window.location.href = `/admin/booking/reservation/${reservationId}/change/`;
+        }
+    });
+
+    calendar.render();
+});
+</script>
+{% endblock %}

@@ -35,4 +35,5 @@ urlpatterns = [
 	path('accounts/', include('django.contrib.auth.urls')),
 	path('auth/', include('authentication.urls')),
 	path('reservation-data/', views.reservation_data, name='reservation_data'),
+	path('admin-reservation-data/', views.admin_reservation_data, name='admin_reservation_data'),
 ]

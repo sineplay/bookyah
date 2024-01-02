@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .forms import ReservationForm
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.urls import reverse
@@ -115,3 +116,20 @@ def reservation_data(request):
 	} for reservation in reservations]
 
 	return JsonResponse(reservation_data, safe=False)
+	
+@staff_member_required
+def admin_reservation_data(request):
+	reservations = Reservation.objects.all()
+	
+	reservation_data = [{
+		'title': f'{reservation.user.email} - {reservation.asset.name}',
+		'id': reservation.id,
+		'start': reservation.start_time.isoformat(),
+		'end': reservation.end_time.isoformat(),
+	} for reservation in reservations]
+	
+	return JsonResponse(reservation_data, safe=False)
+	
+@staff_member_required
+def admin_calendar_view(request):
+	return render(request, 'booking/admin_calendar.html')
