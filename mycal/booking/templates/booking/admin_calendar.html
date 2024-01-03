@@ -4,6 +4,16 @@
 {% endblock %}
 
 {% block content %}
+<div>
+	<label for="assetTypeFilter">Filter by Asset Type:</label>
+	<select id="assetTypeFilter" onchange="updateCalendarEvents()">
+		<option value="">All Asset Types</option>
+		{% for asset_type in asset_types %}
+		<option value="{{ asset_type.id }}">{{ asset_type.name }}</option>
+		{% endfor %}
+	</select>
+</div>
+
 <div id='calendar'></div>
 
 <script>
@@ -23,6 +33,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     calendar.render();
+    
+    window.updateCalendarEvents = function() {
+        var selectedAssetTypeId = document.getElementById('assetTypeFilter').value;
+        var newEventsUrl = `/admin-reservation-data/?asset_type_id=${selectedAssetTypeId}`;
+        calendar.setOption('events', newEventsUrl);  // Update the events URL
+        calendar.refetchEvents();  // Refetch events from the new URL
+    }
 });
+
 </script>
 {% endblock %}

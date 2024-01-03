@@ -119,7 +119,12 @@ def reservation_data(request):
 	
 @staff_member_required
 def admin_reservation_data(request):
-	reservations = Reservation.objects.all()
+	asset_type_id = request.GET.get('asset_type_id')
+	
+	if asset_type_id:
+		reservations = Reservation.objects.filter(asset__asset_type_id=asset_type_id)
+	else:
+		reservations = Reservation.objects.all()
 	
 	reservation_data = [{
 		'title': f'{reservation.user.email} - {reservation.asset.name}',
@@ -132,4 +137,5 @@ def admin_reservation_data(request):
 	
 @staff_member_required
 def admin_calendar_view(request):
-	return render(request, 'booking/admin_calendar.html')
+	asset_types = AssetType.objects.all()
+	return render(request, 'booking/admin_calendar.html', {'asset_types': asset_types})
