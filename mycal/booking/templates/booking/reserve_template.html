@@ -49,8 +49,9 @@
     		{{ form.end_time.errors }}
     	</p>
     	
+    	{% if not is_modifying %}
     	<div>
-    		<label for="id_is_recurring">Is Recurring:</label>
+    		<label for="id_is_recurring" class="recur-day-label">Is Recurring:</label>
     		<input type="checkbox" id="id_is_recurring" name="is_recurring">
 		</div>
 
@@ -84,6 +85,7 @@
 		        <input type="date" id="id_recurrence_end_date" name="recurrence_end_date">
 		    </div>
 		</div>
+		{% endif %}
 
 		{% if is_modifying %}
 		<input type="submit" value="Update Reservation">

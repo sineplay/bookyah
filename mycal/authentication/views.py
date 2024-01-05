@@ -106,6 +106,14 @@ def modify_reservation_view(request, pk):
 		
 	if request.method == 'POST':
 		form = ReservationForm(request.POST, instance=reservation, asset_type_id=reservation.asset.asset_type_id)
+		
+		if reservation.series_id:
+			form.cleaned_data['is_recurring'] = False
+			form.cleaned_data['recurrence_type'] = None
+			form.cleaned_data['recurrence_interval'] = None
+			form.cleaned_data['recurrence_days'] = None
+			form.cleaned_data['recurrence_end_date'] = None
+			
 		if form.is_valid():
 			form.save()
 			messages.success(request, 'Your reservation has been updated.')

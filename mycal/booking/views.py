@@ -100,6 +100,8 @@ def create_reservation(request, asset_type_id=None):
 								end_time=new_end,
 								user=request.user,
 								series_id=series_id,
+								recurrence_type=form.cleaned_data['recurrence_type'],
+								recurrence_days=','.join(map(str, recurrence_days)) if recurrence_days else ''
 							)
 					return redirect('reserve-success')
 				

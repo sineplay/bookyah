@@ -54,10 +54,20 @@ def generate_recurring_dates(start_date, end_date, recurrence_type, interval=1, 
 	elif recurrence_type == 'weekly' and weekdays:
 		weekdays = [int(day) for day in weekdays]
 		
+		start_date_added = False
+		
+		if current_date.weekday() in weekdays:
+			dates.append(current_date)
+			start_date_added = True
+		
+		first_weekday_after_start = min((day for day in weekdays if day >= current_date.weekday()), default=min(weekdays))
+		days_until_first_weekday = (first_weekday_after_start - current_date.weekday()) % 7
+		current_date += datetime.timedelta(days=days_until_first_weekday)
+		
 		while current_date <= end_date:
 			for day in weekdays:
-				week_day_date = current_date + datetime.timedelta(days=day - current_date.weekday())
-				if week_day_date <= end_date and week_day_date >= current_date:
+				week_day_date = current_date + datetime.timedelta(days=(day - current_date.weekday()) % 7)
+				if week_day_date <= end_date and (week_day_date != start_date.date() or not start_date_added):
 					dates.append(week_day_date)
 			current_date += datetime.timedelta(weeks=interval)
 
