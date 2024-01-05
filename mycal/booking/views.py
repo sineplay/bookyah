@@ -6,10 +6,20 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+from django.db import transaction
+from django.db.models import Q
 from django.urls import reverse
-from .models import AssetType, Asset, Reservation
+from .models import AssetType, Asset, Reservation, generate_recurring_dates
+import datetime, uuid
 
 # Create your views here.
+
+def check_conflicts(start_time, end_time, asset_id):
+	conflicts = Reservation.objects.filter(
+		Q(asset_id=asset_id),
+		Q(start_time__lt=end_time, end_time__gt=start_time)
+	)
+	return conflicts
 
 @login_required
 def select_asset_type(request):
@@ -33,6 +43,7 @@ def create_reservation(request, asset_type_id=None):
 			asset = form.cleaned_data['asset']
 			start_time = form.cleaned_data['start_time']
 			end_time = form.cleaned_data['end_time']
+			series_id = None
 			
 			# Check for overlapping reservations
 			overlapping_reservations = Reservation.objects.filter(
@@ -43,9 +54,58 @@ def create_reservation(request, asset_type_id=None):
 			if overlapping_reservations.exists():
 				messages.error(request, 'This asset is already reserved during the requested time.')
 				return render(request, 'booking/reserve_template.html', {'form': form, 'asset_type_name': asset_type.name })
+			
+			if form.cleaned_data['is_recurring']:
+				# messages.info(request,"The recurring event code was triggered.")
+				recurrence_days = [int(day) for day in form.cleaned_data.get('recurrence_days', [])]
+				recurring_dates = generate_recurring_dates(
+					start_time,
+					form.cleaned_data['recurrence_end_date'],
+					form.cleaned_data['recurrence_type'],
+					interval=1, # Hardcoded interval until we have support for intervals
+					weekdays=recurrence_days
+				)
+				
+				conflicts = []
+				for date in recurring_dates:
+					new_start = datetime.datetime.combine(date, start_time.time())
+					new_end = datetime.datetime.combine(date, end_time.time())
+					
+					if check_conflicts(new_start, new_end, form.cleaned_data['asset'].id).exists():
+						conflicts.append(new_start)
+						
+					if len(conflicts) >= 10:
+						break
+				
+				if conflicts:
+					conflict_dates = ', '.join([date.strftime("%Y-%m-%d %H:%M") for date in conflicts])
+					messages.error(request, f"Cannot create recurring reservation due to conflicts on these dates: {conflict_dates}. Please choose different times or modify the recurrence pattern.")
+					
+					assets = Asset.objects.filter(asset_type_id=asset_type_id) if asset_type_id else Asset.objects.none()
+					
+					return render(request, 'booking/reserve_template.html', {
+					'form': form,
+					'asset_type_name': asset_type.name,
+					'assets': assets,
+				})
+				else:
+					series_id = uuid.uuid4()
+					with transaction.atomic():
+						for date in recurring_dates:
+							new_start = datetime.datetime.combine(date, start_time.time())
+							new_end = datetime.datetime.combine(date, end_time.time())
+							Reservation.objects.create(
+								asset=form.cleaned_data['asset'],
+								start_time=new_start,
+								end_time=new_end,
+								user=request.user,
+								series_id=series_id,
+							)
+					return redirect('reserve-success')
 				
 			reservation = form.save(commit=False)
 			reservation.user = request.user
+			reservation.series_id = series_id
 			reservation.save()
 			user_email = request.user.email
 			formatted_start_time = reservation.start_time.strftime('%B %-d, %Y, %-I:%M%p')

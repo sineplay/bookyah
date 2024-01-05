@@ -161,6 +161,8 @@ def modify_reservation_view(request, pk):
 def cancel_reservation_view(request, pk):
 	reservation = get_object_or_404(Reservation, pk=pk, user=request.user)
 	if reservation.can_be_cancelled():
+		if reservation.series_id:
+			messages.info(request, "This reservation was part of a series. Only this specific instance has been cancelled.")
 		formatted_start_time = reservation.start_time.strftime('%B %-d, %Y, %-I:%M%p')
 		asset = reservation.asset
 		reservation.cancel()
@@ -189,6 +191,24 @@ def cancel_reservation_view(request, pk):
 		return redirect('profile')
 	else:
 		messages.error(request, "This reservation cannot be cancelled.")
+		return redirect('profile')
+
+@login_required
+def cancel_series_view(request, series_id):
+	series_reservations = Reservation.objects.filter(series_id=series_id, user=request.user)
+	
+	if not series_reservations:
+		messages.error(request, "No such series found.")
+		return redirect('profile')
+		
+	if series_reservations.first().can_be_cancelled():
+		series_reservations.delete()
+		
+		messages.success(request, "Your entire series of reservations has been cancelled.")
+		# SEND EMAIL CODE HERE
+		return redirect('profile')
+	else:
+		messages.error(request, "This series cannot be cancelled.")
 		return redirect('profile')
 
 @login_required

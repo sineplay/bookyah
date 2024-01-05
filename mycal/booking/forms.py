@@ -4,6 +4,12 @@ from django.utils import timezone
 from .models import Reservation, AssetType, Asset  # Import your Reservation model
 
 class ReservationForm(forms.ModelForm):
+	is_recurring = forms.BooleanField(required=False)
+	recurrence_type = forms.ChoiceField(choices=(('daily', 'Daily'), ('weekly', 'Weekly')), required=False)
+	recurrence_end_date = forms.DateField(required=False)  # For weekly and monthly
+	recurrence_days = forms.MultipleChoiceField(choices=[(str(i), day) for i, day in enumerate(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])], required=False, widget=forms.CheckboxSelectMultiple())  # For weekly
+	recurrence_interval = forms.IntegerField(required=False)  # Days for daily, months for monthly
+	
 	def __init__(self, *args, **kwargs):
 		asset_type_id = kwargs.pop('asset_type_id', None)
 		self.reservation_instance = kwargs.get('instance', None)
@@ -19,7 +25,7 @@ class ReservationForm(forms.ModelForm):
 
 	class Meta:
 		model = Reservation
-		fields = ['asset', 'start_time', 'end_time']  # include other relevant fields
+		fields = ['asset', 'start_time', 'end_time', 'is_recurring', 'recurrence_type', 'recurrence_end_date', 'recurrence_days', 'recurrence_interval']  # include other relevant fields
 
 		# Here, you can customize how Django renders the form fields,
 		# specify field types, widgets, placeholders, classes, and more.

@@ -48,6 +48,42 @@
     		{{ form.end_time.label_tag }} {{ form.end_time }}
     		{{ form.end_time.errors }}
     	</p>
+    	
+    	<div>
+    		<label for="id_is_recurring">Is Recurring:</label>
+    		<input type="checkbox" id="id_is_recurring" name="is_recurring">
+		</div>
+
+		<!-- Recurrence type dropdown -->
+		<div id="recurrenceTypeDiv" style="display:none;">
+		    <label for="id_recurrence_type">Recurrence Type:</label>
+		    <select id="id_recurrence_type" name="recurrence_type" onchange="updateRecurrenceFields()">
+		        <option value="">Choose...</option>
+		        <option value="daily">Daily</option>
+		        <option value="weekly">Weekly</option>
+		    </select>
+		</div>
+
+		<!-- Recurrence fields, initially hidden -->
+		<div id="recurrenceFields" style="display:none;">
+
+		    <!-- Weekly checkboxes -->
+		    <div id="weeklyCheckboxesDiv" style="display:none;">
+		        <label>Repeat on:</label>
+		        {% for day in form.recurrence_days.field.choices %}
+		        <div>
+		            <input type="checkbox" id="id_recurrence_days_{{forloop.counter0}}" name="recurrence_days" value="{{ day.0 }}">
+		            <label for="id_recurrence_days_{{forloop.counter0}}" class="recur-day-label">{{ day.1 }}</label>
+		        </div>
+		        {% endfor %}
+		    </div>
+
+		    <!-- End date for weekly -->
+		    <div id="endDateDiv" style="display:none;">
+		        <label for="id_recurrence_end_date">End by:</label>
+		        <input type="date" id="id_recurrence_end_date" name="recurrence_end_date">
+		    </div>
+		</div>
 
 		{% if is_modifying %}
 		<input type="submit" value="Update Reservation">
@@ -359,7 +395,26 @@
         		alert('The start time must be in the future.');
         	}
     	});
+    	
+    	updateRecurrenceFields();
 	});
+	
+	// JavaScript to show/hide recurrence fields based on selections
+	document.getElementById('id_is_recurring').onchange = function() {
+   		document.getElementById('recurrenceTypeDiv').style.display = this.checked ? 'block' : 'none';
+	};
+
+	function updateRecurrenceFields() {
+	    var type = document.getElementById('id_recurrence_type').value;
+	    
+	    var showRecurrenceFields = type === 'daily' || type === 'weekly';
+	    document.getElementById('recurrenceFields').style.display = showRecurrenceFields ? 'block' : 'none';
+	    
+	    document.getElementById('endDateDiv').style.display = showRecurrenceFields ? 'block' : 'none';
+	    document.getElementById('weeklyCheckboxesDiv').style.display = type === 'weekly' ? 'block' : 'none';
+	}
+
+	document.getElementById('id_recurrence_type').onchange = updateRecurrenceFields;
 	</script>
 
 {% endblock %}

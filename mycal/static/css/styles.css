@@ -101,6 +101,10 @@ form label {
     margin-bottom: 0.5rem;
 }
 
+form label.recur-day-label {
+	display: inline-block;
+}
+
 form input[type="text"],
 form input[type="email"],
 form input[type="password"],
@@ -246,9 +250,9 @@ form button[type="submit"]:hover {
 }
 
 .messages {
-	color: #008f08;
+	/* color: #008f08;
     background-color: #baffba;
-    border: 1px solid #008f08;
+    border: 1px solid #008f08; */
     padding: 10px 20px;
     margin: 10px 0 20px 0; /* Add some margin at the bottom */
     border-radius: 5px;
@@ -257,7 +261,7 @@ form button[type="submit"]:hover {
     font-size: 0.95em; /* Slightly smaller font size */
 }
 
-.errorlist {
+.error, .errorlist {
     color: #d8000c;
     background-color: #ffbaba;
     border: 1px solid #d8000c;
@@ -269,7 +273,13 @@ form button[type="submit"]:hover {
     font-size: 0.95em; /* Slightly smaller font size */
 }
 
-.errorlist li, .messages li {
+.messages .success {
+	color: #008f08;
+    background-color: #baffba;
+    border: 1px solid #008f08;
+}
+
+.errorlist li, .error li, .messages li {
     margin-bottom: 5px; /* Space out individual errors */
     font-size: 0.9em;   /* Slightly smaller font size for error messages */
 }
