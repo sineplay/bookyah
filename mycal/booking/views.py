@@ -1,6 +1,6 @@
 from django.conf import settings
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.shortcuts import get_list_or_404, render, redirect
+from django.http import JsonResponse, HttpResponseRedirect
 from .forms import ReservationForm
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -90,20 +90,61 @@ def create_reservation(request, asset_type_id=None):
 				})
 				else:
 					series_id = uuid.uuid4()
+					first_reservation = None
 					with transaction.atomic():
 						for date in recurring_dates:
 							new_start = datetime.datetime.combine(date, start_time.time())
 							new_end = datetime.datetime.combine(date, end_time.time())
-							Reservation.objects.create(
+							reservation = Reservation.objects.create(
 								asset=form.cleaned_data['asset'],
 								start_time=new_start,
 								end_time=new_end,
 								user=request.user,
 								series_id=series_id,
+								is_recurring=form.cleaned_data['is_recurring'],
 								recurrence_type=form.cleaned_data['recurrence_type'],
+								recurrence_end_date=form.cleaned_data['recurrence_end_date'],
 								recurrence_days=','.join(map(str, recurrence_days)) if recurrence_days else ''
 							)
-					return redirect('reserve-success')
+							if not first_reservation:
+								first_reservation = reservation
+					if first_reservation:
+						formatted_start_time = first_reservation.start_time.strftime('%B %-d, %Y, %-I:%M%p')
+						formatted_end_time = first_reservation.end_time.strftime('%B %-d, %Y, %-I:%M%p')
+						formatted_end_date = first_reservation.recurrence_end_date.strftime('%B %-d, %Y')
+						user_email = request.user.email
+						profile_path = reverse('profile')
+						profile_url = request.build_absolute_uri(profile_path)
+						cancel_path = reverse('cancel_series', args=[series_id])
+						cancel_url = request.build_absolute_uri(cancel_path)
+						subject = (
+							f"Reservation successfully created for {reservation.asset} - BOOKYAH"
+						)
+			
+						message = (
+							f"Hello {request.user.first_name},\n\n"
+							f"This email is to notify you that your reservation series for {first_reservation.asset} "
+							f"has been successfully created.\n"
+							f"Start time: {formatted_start_time}\n"
+							f"End time: {formatted_end_time}\n"
+							f"Recurrence type: {first_reservation.recurrence_type}\n"
+							f"Series end date: {formatted_end_date}\n\n"
+							f"To modify or cancel a single reservation, visit your profile:\n"
+							f"{profile_url}\n\n"
+							f"To cancel the series, click the following link:\n"
+							f"{cancel_url}\n\n"
+							"Regards,\n"
+							"BOOKYAH"
+						)
+			
+						send_mail(
+							subject,
+							message,
+							settings.DEFAULT_FROM_EMAIL,  # Use your DEFAULT_FROM_EMAIL
+							[user_email],  # List of recipient(s)
+							fail_silently=False,
+						)
+						return redirect('reserve-success')
 				
 			reservation = form.save(commit=False)
 			reservation.user = request.user
@@ -201,3 +242,16 @@ def admin_reservation_data(request):
 def admin_calendar_view(request):
 	asset_types = AssetType.objects.all()
 	return render(request, 'booking/admin_calendar.html', {'asset_types': asset_types})
+	
+@staff_member_required
+def view_series(request, series_id):
+	series_reservations = get_list_or_404(Reservation, series_id=series_id)
+	return render(request, 'admin/view_series.html', {'reservations': series_reservations, 'series_id':series_id})
+
+@staff_member_required
+def delete_series(request, series_id):
+	if request.method == 'POST':
+		Reservation.objects.filter(series_id=series_id).delete()
+		messages.success(request, "The entire series has been cancelled.")
+		return HttpResponseRedirect(reverse('admin:booking_reservation_changelist'))
+	return HttpResponseRedirect(reverse('admin:view_series', args=[series_id]))

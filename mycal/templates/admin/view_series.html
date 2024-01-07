@@ -1,0 +1,19 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1>Reservation Series (ID: {{ series_id }})</h1>
+
+<ul>
+{% for reservation in reservations %}
+    <li>
+        <a href="{% url 'admin:booking_reservation_change' reservation.id %}">{{ reservation.asset }} | {{ reservation.start_time }} - {{ reservation.end_time }}</a>
+    </li>
+{% endfor %}
+</ul>
+
+<form action="{% url 'delete_series' series_id %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Cancel Entire Series">
+</form>
+
+{% endblock %}
