@@ -10,7 +10,7 @@ signer = Signer()
 def send_welcome_email(sender, instance, created, **kwargs):
 	if created: # Only send emails upon creation, not every save
 		token = signer.sign(instance.pk)
-		verification_url = f"http://localhost:8000/verify_email/?token={token}"
+		verification_url = f"http://localhost:8000/auth/verify-email/?token={token}"
 		message = (
 			f"Hello {instance.first_name}, welcome to BOOKYAH! Your"
 			f"account has been created successfully.\n\n"

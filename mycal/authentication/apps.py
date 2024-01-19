@@ -7,3 +7,5 @@ class AuthenticationConfig(AppConfig):
     
     def ready(self):
     	import authentication.signals
+    	from .models import AppSetting
+    	AppSetting.objects.get_or_create(pk=1)
