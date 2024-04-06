@@ -1,6 +1,22 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
+class AllowedEmailDomain(models.Model):
+	domain = models.CharField(max_length=255, unique=True)
+	
+	def __str__(self):
+		return self.domain
+		
+class AppSetting(models.Model):
+	restrict_email_domain = models.BooleanField(default=True, verbose_name="Restrict Email Domain")
+	
+	def save(self, *args, **kwargs):
+		if not self.pk and AppSetting.objects.exists():
+			raise ValidationError('There can only be one AppSetting instance')
+		return super(AppSetting, self).save(*args, **kwargs)
+	
+	def __str__(self):
+		return "Application Setting"
 
 class CustomUserManager(BaseUserManager):
 	"""
