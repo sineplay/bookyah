@@ -3,7 +3,7 @@ Simple, elegant asset reservation. Set up categories and assets as an admin, and
 
 **Link to project:** https://github.com/gameqber/mycal
 
-![Select your asset type - BOOKYAH]([http://placecorgi.com/1200/650](https://sineplay.com/wp-content/uploads/bookyah-type.png))
+![Select your asset type - BOOKYAH](https://sineplay.com/wp-content/uploads/bookyah-type.png)
 
 ## How It's Made:
 
