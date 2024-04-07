@@ -19,22 +19,22 @@ This thing has no optimizations yet. I kinda just finished a functioniong app at
 
 ## Prerequesites
 
-> Python 3.8
+- Python 3.8
 
 The following Python packages are also needed, and are found in requirements.txt.
-> Django 4.2.6
-> Django-widget-tweaks
-> Python-decouple 3.8
+- Django 4.2.6
+- Django-widget-tweaks
+- Python-decouple 3.8
 
 ## Installation
 
 1. Clone the main branch to your computer.
 2. At the root level of the app, in the mycal folder, create a file named ".env" with the following settings (only EMAIL_HOST and EMAIL_PORT are required):
-> EMAIL_HOST=
-> EMAIL_PORT=
-> EMAIL_USE_TLS=(True/False)
-> EMAIL_HOST_USER=
-> EMAIL_HOST_PASSWORD=
+- EMAIL_HOST=
+- EMAIL_PORT=
+- EMAIL_USE_TLS=(True/False)
+- EMAIL_HOST_USER=
+- EMAIL_HOST_PASSWORD=
 3. Open a terminal / command prompt, navigate to the folder with the requirements.txt file, and run the command:
 ```
 pip install -r requirements.txt
