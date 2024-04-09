@@ -20,6 +20,7 @@ This thing has no optimizations yet. I kinda just finished a functioniong app at
 ## Prerequesites
 
 - Python 3.8
+- Mail server
 
 The following Python packages are also needed, and are found in requirements.txt.
 - Django 4.2.6
