@@ -1,7 +1,7 @@
 # BOOKYAH Asset Reservation
 Simple, elegant asset reservation. Set up categories and assets as an admin, and have users log in to reserve assets. Handy admin dashboard included thanks to the Django framework.
 
-**Link to project:** https://github.com/gameqber/mycal
+**Link to project:** https://github.com/sineplay/mycal
 
 ![Select your asset type - BOOKYAH](https://sineplay.com/wp-content/uploads/bookyah-type.png)
 
