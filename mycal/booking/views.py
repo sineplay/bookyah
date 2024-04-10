@@ -10,6 +10,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.urls import reverse
 from .models import AssetType, Asset, Reservation, generate_recurring_dates
+from .utils import send_reservation_notification
 import datetime, uuid
 
 # Create your views here.
