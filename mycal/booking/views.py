@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.shortcuts import get_list_or_404, render, redirect
+from django.shortcuts import get_list_or_404, get_object_or_404, render, redirect
 from django.http import JsonResponse, HttpResponseRedirect
 from .forms import ReservationForm
 from django.contrib import messages
@@ -252,7 +252,17 @@ def view_series(request, series_id):
 @staff_member_required
 def delete_series(request, series_id):
 	if request.method == 'POST':
+		reservation = Reservation.objects.filter(series_id=series_id).first()
+		if not reservation:
+			messages.error(request, "No reservations found in this series.")
+			return redirect(reverse('admin:view_series', args=[series_id]))
+		
+		user = reservation.user
+
 		Reservation.objects.filter(series_id=series_id).delete()
+		
+		send_reservation_notification(user, reservation, 'cancelled')
+
 		messages.success(request, "The entire series has been cancelled.")
 		return HttpResponseRedirect(reverse('admin:booking_reservation_changelist'))
 	return HttpResponseRedirect(reverse('admin:view_series', args=[series_id]))
