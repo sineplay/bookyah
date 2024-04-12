@@ -261,7 +261,7 @@ def delete_series(request, series_id):
 
 		Reservation.objects.filter(series_id=series_id).delete()
 		
-		send_reservation_notification(user, reservation, 'cancelled')
+		send_reservation_notification(request, user, reservation, 'cancelled')
 
 		messages.success(request, "The entire series has been cancelled.")
 		return HttpResponseRedirect(reverse('admin:booking_reservation_changelist'))
