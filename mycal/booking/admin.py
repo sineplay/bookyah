@@ -2,6 +2,7 @@ from typing import Any
 from django.contrib import admin
 from .models import AssetType, Asset, Reservation
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.html import format_html
 from .utils import send_reservation_notification
 
@@ -30,7 +31,8 @@ class ReservationAdmin(admin.ModelAdmin):
 			send_reservation_notification(request, obj.user, obj, 'modified')
 	
 	def delete_model(self, request, obj):
-		send_reservation_notification(request, obj.user, obj, 'deleted')
+		if obj.start_time > timezone.now():
+			send_reservation_notification(request, obj.user, obj, 'deleted')
 		super().delete_model(request, obj)
 
 # Register your models here.

@@ -9,6 +9,7 @@ from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Q
 from django.urls import reverse
+from django.utils import timezone
 from .models import AssetType, Asset, Reservation, generate_recurring_dates
 from .utils import send_reservation_notification
 import datetime, uuid
@@ -261,7 +262,8 @@ def delete_series(request, series_id):
 
 		Reservation.objects.filter(series_id=series_id).delete()
 		
-		send_reservation_notification(request, user, reservation, 'cancelled')
+		if reservation.start_time > timezone.now():
+			send_reservation_notification(request, user, reservation, 'cancelled')
 
 		messages.success(request, "The entire series has been cancelled.")
 		return HttpResponseRedirect(reverse('admin:booking_reservation_changelist'))
