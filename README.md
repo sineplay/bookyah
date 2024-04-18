@@ -11,7 +11,7 @@ Simple, elegant asset reservation. Set up categories and assets as an admin, and
 
 Built using the Django framework and FullCalendar, this fine piece of Python script was written out of my immeasurable disappointment in not finding a great asset reservation system without out-of-this-world pricing. I got by with a little help from my AI friend, ChatGPT, as this is my first Python script after writing everyone's favorite starter script, "Hello, World!"
 
-Yes, a leap from outputting text on a terminal to a full-blown asset reservation system does sound a bit outrageous, and you're right. However, that's what happens when I get a little upset about not having what I want and knowing how dangerous I can be to make it happen (just ask my extremely patient wife). I applied my previous knowledge in the basics of programming, intertwined some suggestions and advice from our new AI overlords, and here we have it! Polished top to bottom? *Absolutely not.* Does it function well enough for my needs? You bet it does. I hope it works for you, too. If not, as we say about the weather here in Massachusetts, just wait a little while. The next revision might be somewhat better.
+Yes, a leap from outputting text on a terminal to a full-blown asset reservation system does sound a bit outrageous, and you're right. However, this is something I took absolute pride in to develop. I applied my previous knowledge in the basics of programming, intertwined some suggestions and advice from our new AI overlords, and here we have it! Polished top to bottom? *Absolutely not.* Does it function well enough for my needs? You bet it does. I hope it works for you, too. If not, as we say about the weather here in Massachusetts, just wait a little while. The next revision might be somewhat better.
 
 ## Optimizations
 
@@ -47,3 +47,7 @@ python manage.py runserver
 ```
 
 If all goes well, your BOOKYAH asset reservation app should be live on your host at http://localhost:8000. Enjoy!
+
+## Donate
+
+Enjoy the app? Feel the uncontrollable desire to contribute to my big dreams? As the founder of Sineplay Studios, LLC, I invite you to [donate via PayPal](https://www.paypal.com/donate/?hosted_button_id=4CKBM3N63AXJE), and you will have my ultimate thanks in return.
