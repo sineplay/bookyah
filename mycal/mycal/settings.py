@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'REPLACE_WITH_YOUR_OWN'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -144,4 +144,4 @@ EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)  # Common ports are 25,
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)  # Use True for TLS, False for not
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')  # Your SMTP username
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')  # Your SMTP password
-DEFAULT_FROM_EMAIL = 'bookyah@example.com'  # Default email address to use for various automated correspondence
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')  # Default email address to use for various automated correspondence
