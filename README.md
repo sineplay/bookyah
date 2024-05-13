@@ -30,7 +30,9 @@ The following Python packages are also needed, and are found in requirements.txt
 ## Installation
 
 1. Clone the main branch to your computer.
-2. At the root level of the app, in the mycal folder, create a file named ".env" with the following settings (only EMAIL_HOST and EMAIL_PORT are required):
+2. At the root level of the app, in the mycal folder, create a file named ".env" with the following settings (DEFAULT_FROM_EMAIL, EMAIL_HOST, and EMAIL_PORT are required):
+- SECRET_KEY=
+- DEFAULT_FROM_EMAIL=
 - EMAIL_HOST=
 - EMAIL_PORT=
 - EMAIL_USE_TLS=(True/False)
