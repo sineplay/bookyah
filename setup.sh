@@ -46,7 +46,7 @@ while true; do
 done
 
 # Using Django shell to create superuser
-echo "From django.contrib.auth import get_user_model; User = get_user_model();
+echo "from django.contrib.auth import get_user_model; User = get_user_model();
 User.objects.create_superuser(username='$email', email='$email', password='$password', first_name='$first_name', last_name='$last_name')" | python manage.py shell
 
 echo "Setup complete! Change your directory to the mycal folder (cd mycal) and run the server with: python manage.py runserver"
