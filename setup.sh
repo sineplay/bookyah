@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Check if Python is installed and available
+if ! command -v python &> /dev/null
+then
+    echo "Python is not installed or not found in PATH. Please install Python and try again."
+    exit 1
+fi
+
 # Navigate to the correct directory (if necessary)
 # Uncomment the next line if the script is not run from inside the project directory
 # cd path/to/bookyah
@@ -49,4 +56,4 @@ done
 echo "from django.contrib.auth import get_user_model; User = get_user_model();
 User.objects.create_superuser(email='$email', password='$password', first_name='$first_name', last_name='$last_name', is_staff=True, email_verified=True)" | python manage.py shell
 
-echo "Setup complete! Change your directory to the mycal folder (cd mycal) and run the server with: python manage.py runserver"
+echo "Setup complete! Activate the virtual environment (source venv/bin/activate), change your directory to the mycal folder (cd mycal), and run the server with: python manage.py runserver"
