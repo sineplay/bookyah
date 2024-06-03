@@ -40,7 +40,7 @@ chmod +x setup.sh
 ```
 4. Follow the instructions in the script (enter your Superuser details).
 5. After the script completes, update your .env file (mycal/.env) with your own email server values.
-6. **Important:** Once completed with testing, and especially for production environments, turn off debug errors. In mycal/mycal/settings.py, update the following line:
+6. **Important:** Once completed with testing, and especially for production environments, turn off debug mode. In mycal/mycal/settings.py, update the following line:
 ```
 DEBUG = True
 ```
@@ -59,6 +59,7 @@ DEBUG = False
 python -m venv venv
 ```
 5. Activate the virtual environment:
+
 **Linux/Mac:**
 ```
 source venv/bin/activate
@@ -71,7 +72,7 @@ venv\scripts\activate
 ```
 pip install -r requirements.txt
 ```
-7. **Important:** Once completed with testing, and especially for production environments, turn off debug errors. In mycal/mycal/settings.py, update the following line:
+7. **Important:** Once completed with testing, and especially for production environments, turn off debug mode. In mycal/mycal/settings.py, update the following line:
 ```
 DEBUG = True
 ```
