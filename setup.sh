@@ -11,9 +11,6 @@ fi
 # Uncomment the next line if the script is not run from inside the project directory
 # cd path/to/bookyah
 
-echo "Renaming .env.example to .env..."
-mv mycal/.env.example mycal/.env
-
 echo "Creating virtual environment..."
 python -m venv venv
 
@@ -23,10 +20,17 @@ source venv/bin/activate
 echo "Installing requirements..."
 pip install -r requirements.txt
 
-echo "Generating a Django secret key..."
-# This command uses Python to generate a secret key and replace the placeholder in the .env file
-SECRET_KEY=$(python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())")
-sed -i "s/YOUR_RANDOMLY_GENERATED_KEY_SEE_README/$SECRET_KEY/" mycal/.env
+if [ -f "mycal/.env.example" ]; then
+    echo "Renaming .env.example to .env..."
+    mv mycal/.env.example mycal/.env
+
+    echo "Generating a Django secret key..."
+    # This command uses Python to generate a secret key and replace the placeholder in the .env file
+    SECRET_KEY=$(python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())")
+    sed -i "s/YOUR_RANDOMLY_GENERATED_KEY_SEE_README/$SECRET_KEY/" mycal/.env
+else
+    echo ".env.example does not exist. Skipping rename and key generation."
+fi
 
 echo "Running migrations..."
 cd mycal
@@ -53,7 +57,15 @@ while true; do
 done
 
 # Using Django shell to create superuser
-echo "from django.contrib.auth import get_user_model; User = get_user_model();
-User.objects.create_superuser(email='$email', password='$password', first_name='$first_name', last_name='$last_name', is_staff=True, email_verified=True)" | python manage.py shell
+echo "from django.db.models.signals import post_save;
+from django.contrib.auth import get_user_model;
+from authentication.signals import send_welcome_email;
+User = get_user_model();
+
+post_save.disconnect(send_welcome_email, sender=User);
+
+User.objects.create_superuser(email='$email', password='$password', first_name='$first_name', last_name='$last_name', is_staff=True, email_verified=True);
+
+post_save.connect(send_welcome_email, sender=User);" | python manage.py shell
 
 echo "Setup complete! Activate the virtual environment (source venv/bin/activate), change your directory to the mycal folder (cd mycal), and run the server with: python manage.py runserver"
