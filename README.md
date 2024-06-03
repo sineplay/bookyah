@@ -27,28 +27,87 @@ The following Python packages are also needed, and are found in requirements.txt
 - Django-widget-tweaks
 - Python-decouple 3.8
 
-## Installation
+## Automatic Installation (requires Linux/Mac -- Windows support coming soon!)
 
 1. Clone the main branch to your computer.
-2. At the root level of the app, in the mycal folder, create a file named ".env" with the following settings (DEFAULT_FROM_EMAIL, EMAIL_HOST, and EMAIL_PORT are required):
-- SECRET_KEY=
-- DEFAULT_FROM_EMAIL=
-- EMAIL_HOST=
-- EMAIL_PORT=
-- EMAIL_USE_TLS=(True/False)
-- EMAIL_HOST_USER=
-- EMAIL_HOST_PASSWORD=
-3. Open a terminal / command prompt, navigate to the folder with the requirements.txt file, and run the command:
+2. Open a terminal, navigate to the root of the BOOKYAH folder, and add execute permissions for setup.sh:
+```
+chmod +x setup.sh
+```
+3. Start the setup.sh script:
+```
+./setup.sh
+```
+4. Follow the instructions in the script (enter your Superuser details).
+5. After the script completes, update your .env file (mycal/.env) with your own email server values.
+6. **Important:** Once completed with testing, and especially for production environments, turn off debug mode. In mycal/mycal/settings.py, update the following line:
+```
+DEBUG = True
+```
+To:
+```
+DEBUG = False
+```
+
+## Manual Installation
+
+1. Clone the main branch to your computer.
+2. At the root level of the app, in the mycal folder, rename ".env.example" to ".env".
+3. Modify .env with your own values. For SECRET_KEY, you can use the Django admin shell to generate a key (do not share or use with any other installation) - steps provided below.
+4. Open a terminal / command prompt, navigate to the root of the BOOKYAH folder, and create a virtual environment:
+```
+python -m venv venv
+```
+5. Activate the virtual environment:
+
+**Linux/Mac:**
+```
+source venv/bin/activate
+```
+**Windows:**
+```
+venv\scripts\activate
+```
+6. Install required Python plugins:
 ```
 pip install -r requirements.txt
 ```
-4. Change to the mycal directory in the terminal / command prompt.
-5. Run the following command to start the server:
+7. **Important:** Once completed with testing, and especially for production environments, turn off debug mode. In mycal/mycal/settings.py, update the following line:
 ```
-python manage.py runserver
+DEBUG = True
+```
+To:
+```
+DEBUG = False
 ```
 
-If all goes well, your BOOKYAH asset reservation app should be live on your host at http://localhost:8000. Enjoy!
+## Generate a SECRET_KEY (for manual installations)
+
+This requires that you've already installed Python, created a virtual environment, and installed the plugins.
+
+1. With the virtual environment activated, in terminal / command prompt, start Python
+```
+python
+```
+2. Enter the following line:
+```
+from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())
+```
+
+The output on the line following the command (long string of random characters) is your SECRET_KEY.
+
+## Start the BOOKYAH server
+
+1. Open a terminal / command prompt, navigate to the root of the BOOKYAH folder, and start the virtual environment (if not already activated):
+```
+source venv/bin/activate
+```
+2. Start the server:
+```
+python mycal/manage.py runserver
+```
+
+BOOKYAH should now be accessible at the default port (http://localhost:8000). Log in with the superuser account you created during the setup. Enjoy!
 
 ## Donate
 
