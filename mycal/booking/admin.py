@@ -1,15 +1,22 @@
 from typing import Any
 from django.contrib import admin
-from .models import AssetType, Asset, Reservation
+from import_export.admin import ImportExportModelAdmin
+from .models import AssetType, Asset, CustomUser, Reservation
+from .resources import AssetTypeResource, AssetResource
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
 from .utils import send_reservation_notification
 
 @admin.register(AssetType)
-class AssetTypeAdmin(admin.ModelAdmin):
+class AssetTypeAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 	list_display = ('name', 'fa_icon')
 	search_fields = ('name',)
+	resource_class = AssetTypeResource
+
+@admin.register(Asset)
+class AssetAdmin(ImportExportModelAdmin):
+	resource_class = AssetResource
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):
@@ -36,5 +43,5 @@ class ReservationAdmin(admin.ModelAdmin):
 		super().delete_model(request, obj)
 
 # Register your models here.
-admin.site.register(Asset)
-#admin.site.register(Reservation)
+# admin.site.register(Asset)
+# admin.site.register(Reservation)

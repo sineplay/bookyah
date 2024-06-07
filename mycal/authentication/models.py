@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.forms import ValidationError
 
 class AllowedEmailDomain(models.Model):
 	domain = models.CharField(max_length=255, unique=True)

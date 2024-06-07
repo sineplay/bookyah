@@ -1,10 +1,21 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import path
+from import_export.admin import ImportExportModelAdmin
+from .resources import CustomUserResource
 from .models import AllowedEmailDomain, AppSetting, CustomUser, UserProfile
 
-admin.site.register(CustomUser)
+# admin.site.register(CustomUser)
 admin.site.register(UserProfile)
+
+class CustomUserAdmin(ImportExportModelAdmin):
+	resource_class = CustomUserResource
+	list_display = ('email', 'first_name', 'last_name', 'is_active', 'is_staff', 'email_verified')
+	search_fields = ('email', 'first_name', 'last_name')
+
+# admin.site.unregister(CustomUser)
+
+admin.site.register(CustomUser, CustomUserAdmin)
 
 @admin.register(AllowedEmailDomain)
 class AllowedEmailDomainAdmin(admin.ModelAdmin):
