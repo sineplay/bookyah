@@ -10,11 +10,11 @@ class AssetResource(resources.ModelResource):
 	class Meta:
 		model = Asset
 
-class NullableUUIDWidget(widgets.UUIDWidget):
+class NullableUUIDWidget(widgets.CharWidget):
 	def clean(self, value, row=None, *args, **kwargs):
-		if value in ('None', ''):
+		if value in ('None', '', 'null'):
 			return None
-		return super().clean(value, row=row, *args, **kwargs)
+		return value
 
 class ReservationResource(resources.ModelResource):
     series_id = fields.Field(
