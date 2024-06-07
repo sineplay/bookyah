@@ -2,7 +2,7 @@ from typing import Any
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 from .models import AssetType, Asset, CustomUser, Reservation
-from .resources import AssetTypeResource, AssetResource
+from .resources import AssetTypeResource, AssetResource, ReservationResource
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
@@ -19,8 +19,9 @@ class AssetAdmin(ImportExportModelAdmin):
 	resource_class = AssetResource
 
 @admin.register(Reservation)
-class ReservationAdmin(admin.ModelAdmin):
+class ReservationAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 	list_display = ('asset', 'start_time', 'end_time', 'user', 'series_actions')
+	resource_class = ReservationResource
 	
 	def series_actions(self, obj):
 		if obj.series_id:
