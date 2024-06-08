@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 	'authentication.apps.AuthenticationConfig',
 	'booking',
 	'widget_tweaks',
+    'import_export',
 ]
 
 MIDDLEWARE = [
