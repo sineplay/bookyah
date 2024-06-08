@@ -1,3 +1,18 @@
+# BOOKYAH - Asset Reservation Application
+# Copyright (C) 2024 Sineplay Studio, LLC
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# The LICENSE file describes the conditions under which this software
+# may be distributed.
+
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from .views import RegisterView, profile_view, update_profile, archived_reservations_view, modify_reservation_view, cancel_reservation_view, cancel_series_view, verify_email, resend_verification_email, verify_email_reminder

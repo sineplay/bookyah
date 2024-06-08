@@ -112,3 +112,7 @@ BOOKYAH should now be accessible at the default port (http://localhost:8000). Lo
 ## Donate
 
 Enjoy the app? Feel the uncontrollable desire to contribute to my big dreams? As the founder of Sineplay Studios, LLC, I invite you to [donate via PayPal](https://www.paypal.com/donate/?hosted_button_id=4CKBM3N63AXJE), and you will have my ultimate thanks in return.
+
+## License
+
+This software is governed by the [GNU GPL](LICENSE).
