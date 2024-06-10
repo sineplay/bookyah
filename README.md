@@ -15,7 +15,7 @@ Yes, a leap from outputting text on a terminal to a full-blown asset reservation
 
 ## Optimizations
 
-This thing has no optimizations yet. I kinda just finished a functioniong app at the time of writing this README. Stay tuned.
+This thing has no optimizations yet. I kinda just finished a functioning app at the time of writing this README. Stay tuned.
 
 ## Prerequesites
 
