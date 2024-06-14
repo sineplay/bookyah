@@ -1,6 +1,6 @@
 {% extends "base_generic.html" %}
 
-{% block title %}Login - BookYah!{% endblock %}
+{% block title %}Login - BOOKYAH{% endblock %}
 
 {% block content %}
 
@@ -18,6 +18,9 @@
     <tr>
         <td>{{ form.password.label_tag }}</td>
         <td>{{ form.password }}</td>
+    </tr>
+    <tr><td>&nbsp;</td>
+        <td><a href="{% url 'password_reset' %}">Forgot your password?</a></td>
     </tr>
     </table>
     <input type="submit" value="login" />
