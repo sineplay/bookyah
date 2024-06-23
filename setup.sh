@@ -20,6 +20,8 @@ if command -v python3 &>/dev/null; then
     PYTHON_CMD=python3
 elif command -v python &> /dev/null; then
     PYTHON_CMD=python
+elif command -v py &> /dev/null; then
+    PYTHON_CMD=py
 else
     echo "Python is not installed or not found in PATH. Please install Python and try again."
     exit 1
