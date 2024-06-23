@@ -113,4 +113,4 @@ post_save.connect(send_welcome_email, sender=User);
 # Run the Python script via manage.py
 & $pythonCommand manage.py shell -c $pythonScript
 
-Write-Host "Setup complete! Activate the virtual environment (.\venv\Scripts\Activate.ps1), change your directory to the mycal folder (Set-Location mycal), and run the server with: $pythonCommand manage.py runserver"
+Write-Host "Setup complete! Run the server with: $pythonCommand manage.py runserver"
