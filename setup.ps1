@@ -62,7 +62,7 @@ do {
 $plainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password))
 
 # Using Django shell to create superuser
-$pythonCommand manage.py shell -Command "
+& $pythonCommand manage.py shell -Command "
 from django.db.models.signals import post_save;
 from django.contrib.auth import get_user_model;
 from authentication.signals import send_welcome_email;
