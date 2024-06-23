@@ -16,9 +16,24 @@
 #!/bin/bash
 
 # Check if Python is installed and available
-if ! command -v python &> /dev/null
-then
+if command -v python3 &>/dev/null; then
+    PYTHON_CMD=python3
+elif command -v python &> /dev/null; then
+    PYTHON_CMD=python
+elif command -v py &> /dev/null; then
+    PYTHON_CMD=py
+else
     echo "Python is not installed or not found in PATH. Please install Python and try again."
+    exit 1
+fi
+
+# Check for Python version 3.8 or newer
+# Split version into components
+IFS='.' read -r -a version <<< "$($PYTHON_CMD -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')"
+
+# Compare major and minor version components
+if [[ "${version[0]}" -lt 3 ]] || { [[ "${version[0]}" -eq 3 ]] && [[ "${version[1]}" -lt 8 ]]; }; then
+    echo "Detected Python version ${version[0]}.${version[1]}.${version[2]}, but Python 3.8 or newer is required. (Verify with: $PYTHON_CMD --version)"
     exit 1
 fi
 
@@ -27,30 +42,38 @@ fi
 # cd path/to/bookyah
 
 echo "Creating virtual environment..."
-python -m venv venv
+$PYTHON_CMD -m venv venv
 
 echo "Activating virtual environment..."
-source venv/bin/activate
+if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
+    . venv/Scripts/activate
+    VENV_CMD=". venv/Scripts/activate" 
+else
+    source venv/bin/activate
+    VENV_CMD=". venv/bin/activate"
+fi
 
 echo "Installing requirements..."
 pip install -r requirements.txt
 
 if [ -f "mycal/.env.example" ]; then
     echo "Renaming .env.example to .env..."
-    mv mycal/.env.example mycal/.env
+    $PYTHON_CMD -c "import os; os.rename('mycal/.env.example', 'mycal/.env')"
+    # mv mycal/.env.example mycal/.env
 
     echo "Generating a Django secret key..."
     # This command uses Python to generate a secret key and replace the placeholder in the .env file
-    SECRET_KEY=$(python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())")
-    sed -i "s/YOUR_RANDOMLY_GENERATED_KEY_SEE_README/$SECRET_KEY/" mycal/.env
+    SECRET_KEY=$($PYTHON_CMD -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())")
+    $PYTHON_CMD -c "import re; content = open('mycal/.env', 'r').read(); content = re.sub('YOUR_RANDOMLY_GENERATED_KEY_SEE_README', '$SECRET_KEY', content); open('mycal/.env', 'w').write(content)"
+    # sed -i "s/YOUR_RANDOMLY_GENERATED_KEY_SEE_README/$SECRET_KEY/" mycal/.env
 else
     echo ".env.example does not exist. Skipping rename and key generation."
 fi
 
 echo "Running migrations..."
 cd mycal
-python manage.py makemigrations authentication booking
-python manage.py migrate
+$PYTHON_CMD manage.py makemigrations authentication booking
+$PYTHON_CMD manage.py migrate
 
 echo "Creating superuser..."
 # Interactive superuser creation
@@ -81,6 +104,6 @@ post_save.disconnect(send_welcome_email, sender=User);
 
 User.objects.create_superuser(email='$email', password='$password', first_name='$first_name', last_name='$last_name', is_staff=True, email_verified=True);
 
-post_save.connect(send_welcome_email, sender=User);" | python manage.py shell
+post_save.connect(send_welcome_email, sender=User);" | $PYTHON_CMD manage.py shell
 
-echo "Setup complete! Activate the virtual environment (source venv/bin/activate), change your directory to the mycal folder (cd mycal), and run the server with: python manage.py runserver"
+echo "Setup complete! Activate the virtual environment ($VENV_CMD), change your directory to the mycal folder (cd mycal), and run the server with: $PYTHON_CMD manage.py runserver"

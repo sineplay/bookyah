@@ -27,20 +27,24 @@ The following Python packages are also needed, and are found in requirements.txt
 - Django-widget-tweaks
 - Python-decouple 3.8
 
-## Automatic Installation (requires Linux/Mac -- Windows support coming soon!)
+## Automatic Installation
 
 1. Clone the main branch to your computer.
-2. Open a terminal, navigate to the root of the BOOKYAH folder, and add execute permissions for setup.sh:
-```
-chmod +x setup.sh
-```
-3. Start the setup.sh script:
+2. Start the setup script:
+
+**Linux/Mac:**
+From Terminal/Bash (you may need to add execute permissions first: chmod +x setup.sh):
 ```
 ./setup.sh
 ```
-4. Follow the instructions in the script (enter your Superuser details).
-5. After the script completes, update your .env file (mycal/.env) with your own email server values.
-6. **Important:** Once completed with testing, and especially for production environments, turn off debug mode. In mycal/mycal/settings.py, update the following line:
+**Windows:**
+From PowerShell:
+```
+.\setup.ps1
+```
+3. Follow the instructions in the script (enter your Superuser details).
+4. After the script completes, update your .env file (mycal/.env) with your own email server values.
+5. **Important:** Once completed with testing, and especially for production environments, turn off debug mode. In mycal/mycal/settings.py, update the following line:
 ```
 DEBUG = True
 ```
@@ -99,8 +103,13 @@ The output on the line following the command (long string of random characters) 
 ## Start the BOOKYAH server
 
 1. Open a terminal / command prompt, navigate to the root of the BOOKYAH folder, and start the virtual environment (if not already activated):
+**Linux/Mac:**
 ```
 source venv/bin/activate
+```
+**Windows:**
+```
+venv\Scripts\activate
 ```
 2. Start the server:
 ```
@@ -108,6 +117,10 @@ python mycal/manage.py runserver
 ```
 
 BOOKYAH should now be accessible at the default port (http://localhost:8000). Log in with the superuser account you created during the setup. Enjoy!
+
+## Install BOOKYAH on a web server ##
+
+Instructions above are mainly for testing on a local machine. If you're ready to rock and roll in production, please follow the steps in the Wiki: [Install BOOKYAH on a Linux Web Server (nginx)](https://github.com/sineplay/bookyah/wiki/Install-BOOKYAH-on-a-Linux-Web-Server-(nginx))
 
 ## Donate
 
