@@ -17,21 +17,26 @@
 
 # Check if Python is installed and available
 $pythonCommands = @("python3", "python", "py") # List of possible Python command names
+$requiredVersion = "3.8"
 $pythonCommand = $null # Initialize the variable to store the command
+$pythonVersion = $null
 
 foreach ($cmd in $pythonCommands) {
     # Check each command to see if it executes correctly
     try {
         $versionOutput = & $cmd -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
-        if ($versionOutput -ge "3.8") {
-            $pythonCommand = $cmd
-            Write-Host "Using Python command: $pythonCommand with version $versionOutput"
-            break
-        } else {
-            Write-Host "Found Python command $cmd but version $versionOutput is less than required 3.8."
+        if ($versionOutput) {
+            Write-Host "Found Python command $cmd with version $versionOutput"
+            if ([version]$versionOutput -ge [version]$requiredVersion) {
+                $pythonCommand = $cmd
+                $pythonVersion = $versionOutput
+                break
+            } else {
+                Write-Host "$cmd version $versionOutput is less than required $requiredVersion."
+            }
         }
     } catch {
-        Write-Host "$cmd cannot execute properly or does not meet the version requirement."
+        Write-Host "$cmd cannot execute properly."
     }
 }
 
