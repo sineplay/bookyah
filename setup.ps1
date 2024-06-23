@@ -1,7 +1,31 @@
+# BOOKYAH - Asset Reservation Application
+# Copyright (C) 2024 Sineplay Studio, LLC
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# The LICENSE file describes the conditions under which this software
+# may be distributed.
+
 # PowerShell Script for BOOKYAH - Asset Reservation Application Setup
 
 # Check if Python is installed and available
-$pythonCommand = @("python3", "python", "py") | Where-Object { Get-Command $_ -ErrorAction SilentlyContinue }
+$pythonCommands = @("python3", "python", "py") # List of possible Python command names
+$pythonCommand = $null # Initialize the variable to store the command
+
+foreach ($cmd in $pythonCommands) {
+    if (Get-Command $cmd -ErrorAction SilentlyContinue) {
+        $pythonCommand = $cmd
+        break
+    }
+}
+
 if (-not $pythonCommand) {
     Write-Error "Python is not installed or not found in PATH. Please install Python and try again."
     exit
