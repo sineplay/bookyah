@@ -99,8 +99,8 @@ do {
 
 $plainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password))
 
-# Using Django shell to create superuser
-& $pythonCommand manage.py shell -Command "
+# Construct Python command string
+$pythonScript = @"
 from django.db.models.signals import post_save;
 from django.contrib.auth import get_user_model;
 from authentication.signals import send_welcome_email;
@@ -108,6 +108,9 @@ User = get_user_model();
 post_save.disconnect(send_welcome_email, sender=User);
 User.objects.create_superuser(email='$email', password='$plainPassword', first_name='$firstName', last_name='$lastName', is_staff=True, email_verified=True);
 post_save.connect(send_welcome_email, sender=User);
-"
+"@
+
+# Run the Python script via manage.py
+& $pythonCommand manage.py shell -c $pythonScript
 
 Write-Host "Setup complete! Activate the virtual environment (.\venv\Scripts\Activate.ps1), change your directory to the mycal folder (Set-Location mycal), and run the server with: $pythonCommand manage.py runserver"
