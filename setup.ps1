@@ -66,7 +66,7 @@ pip install -r requirements.txt
 
 if (Test-Path "mycal/.env.example") {
     Write-Host "Renaming .env.example to .env..."
-    Rename-Item -Path "mycal/.env.example" -NewName "mycal/.env"
+    Rename-Item -Path "mycal/.env.example" -NewName ".env"
 
     Write-Host "Generating a Django secret key..."
     $secretKey = & $pythonCommand -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
