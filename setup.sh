@@ -26,9 +26,12 @@ else
 fi
 
 # Check for Python version 3.8 or newer
-version=$($PYTHON_CMD -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
-if [[ "$version" < "3.8" ]]; then
-    echo "Detected Python version $version, but Python 3.8 or newer is required. (Verify with: $PYTHON_CMD --version)"
+# Split version into components
+IFS='.' read -r -a version <<< "$($PYTHON_CMD -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')"
+
+# Compare major and minor version components
+if [[ "${version[0]}" -lt 3 ]] || { [[ "${version[0]}" -eq 3 ]] && [[ "${version[1]}" -lt 8 ]]; }; then
+    echo "Detected Python version ${version[0]}.${version[1]}.${version[2]}, but Python 3.8 or newer is required. (Verify with: $PYTHON_CMD --version)"
     exit 1
 fi
 
