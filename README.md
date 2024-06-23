@@ -103,8 +103,13 @@ The output on the line following the command (long string of random characters) 
 ## Start the BOOKYAH server
 
 1. Open a terminal / command prompt, navigate to the root of the BOOKYAH folder, and start the virtual environment (if not already activated):
+**Linux/Mac:**
 ```
 source venv/bin/activate
+```
+**Windows:**
+```
+venv\Scripts\activate
 ```
 2. Start the server:
 ```
