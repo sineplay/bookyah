@@ -25,6 +25,13 @@ else
     exit 1
 fi
 
+# Check for Python version 3.8 or newer
+version=$($PYTHON_CMD -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
+if [[ "$version" < "3.8" ]]; then
+    echo "Detected Python version $version, but Python 3.8 or newer is required. (Verify with: $PYTHON_CMD --version)"
+    exit 1
+fi
+
 # Navigate to the correct directory (if necessary)
 # Uncomment the next line if the script is not run from inside the project directory
 # cd path/to/bookyah
@@ -38,7 +45,7 @@ if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
     VENV_CMD=". venv/Scripts/activate" 
 else
     source venv/bin/activate
-    VENV_CMD="source venv/bin/activate"
+    VENV_CMD=". venv/bin/activate"
 fi
 
 echo "Installing requirements..."
